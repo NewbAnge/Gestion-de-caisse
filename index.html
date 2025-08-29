@@ -71,7 +71,7 @@
             <!-- Other Pages (Synthèse, Historique, Paramétrage) -->
             <div id="synthese" class="page p-6 lg:p-8"><div class="max-w-7xl mx-auto"><h1 class="text-3xl font-bold text-slate-800 mb-8">Synthèse du Jour</h1><div class="space-y-8"><div class="bg-white p-6 rounded-xl shadow-md border"><h2 class="text-xl font-semibold text-slate-700 mb-4">Récapitulatif des Comptes</h2><div id="summary-recap-table" class="overflow-x-auto"></div></div><div class="grid grid-cols-1 lg:grid-cols-2 gap-8"><div class="bg-white p-6 rounded-xl shadow-md border"><h2 class="text-xl font-semibold text-slate-700 mb-4">Résumé par Catégorie</h2><div id="summary-by-category"></div></div><div class="bg-white p-6 rounded-xl shadow-md border flex flex-col items-center justify-center"><h2 class="text-xl font-semibold text-slate-700 mb-4">Entrées vs Sorties</h2><div class="w-full max-w-xs"><canvas id="summary-chart"></canvas></div></div></div></div></div>
             <div id="historique" class="page p-6 lg:p-8"><div class="max-w-7xl mx-auto"><h1 class="text-3xl font-bold text-slate-800 mb-8">Historique des Journaux</h1><div class="bg-white p-6 rounded-xl shadow-md border"><div class="flex gap-4 mb-6 items-center"><input type="date" id="history-filter-date" class="px-3 py-2 border border-slate-300 rounded-lg shadow-sm"><button id="filter-history-btn" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 shadow-sm">Rechercher</button><button id="clear-filter-btn" class="bg-slate-200 text-slate-700 font-bold py-2 px-4 rounded-lg hover:bg-slate-300 shadow-sm">Afficher tout</button></div><ul id="history-list" class="space-y-2"></ul></div></div></div>
-            <div id="parametrage" class="page p-6 lg:p-8"><div class="max-w-4xl mx-auto"><h1 class="text-3xl font-bold text-slate-800 mb-8">Paramétrage</h1><div class="space-y-8"><div><div class="bg-white p-6 rounded-xl shadow-md border"><h2 class="text-xl font-semibold text-slate-700 mb-4">Gérer les Comptes</h2><div class="flex gap-4 mb-6"><input type="text" id="new-account-input" placeholder="Nom du nouveau compte" class="flex-grow px-3 py-2 border border-slate-300 rounded-lg shadow-sm"><button id="add-account-btn" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 shadow-sm">Ajouter</button></div><ul id="account-list" class="space-y-2"></ul></div></div><div><div class="bg-white p-6 rounded-xl shadow-md border"><h2 class="text-xl font-semibold text-slate-700 mb-4">Gérer les Catégories</h2><div class="flex gap-4 mb-6"><input type="text" id="new-category-input" placeholder="Nouvelle catégorie" class="flex-grow px-3 py-2 border border-slate-300 rounded-lg shadow-sm"><button id="add-category-btn" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 shadow-sm">Ajouter</button></div><ul id="category-list" class="space-y-2"></ul></div></div><div><div class="bg-white p-6 rounded-xl shadow-md border"><h2 class="text-xl font-semibold text-slate-700 mb-4">Date de Travail</h2><p class="text-sm text-slate-500 mb-4">Changez la date pour consulter ou modifier un journal antérieur.</p><div class="flex gap-4 items-center"><input type="date" id="work-date-input" class="px-3 py-2 border border-slate-300 rounded-lg shadow-sm"><button id="change-date-btn" class="bg-slate-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-slate-700 shadow-sm">Charger la date</button></div></div></div></div></div></div>
+            <div id="parametrage" class="page p-6 lg:p-8"><div class="max-w-4xl mx-auto"><h1 class="text-3xl font-bold text-slate-800 mb-8">Paramétrage</h1><div class="space-y-8"><div><div class="bg-white p-6 rounded-xl shadow-md border"><h2 class="text-xl font-semibold text-slate-700 mb-4">Gérer les Comptes</h2><div class="flex gap-4 mb-6"><input type="text" id="new-account-input" placeholder="Nom du nouveau compte" class="flex-grow px-3 py-2 border border-slate-300 rounded-lg shadow-sm"><button id="add-account-btn" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 shadow-sm">Ajouter</button></div><ul id="account-list" class="space-y-2"></ul></div></div><div><div class="bg-white p-6 rounded-xl shadow-md border"><h2 class="text-xl font-semibold text-slate-700 mb-4">Gérer les Catégories</h2><div class="flex gap-4 mb-6"><input type="text" id="new-category-input" placeholder="Nouvelle catégorie" class="flex-grow px-3 py-2 border border-slate-300 rounded-lg shadow-sm"><button id="add-category-btn" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 shadow-sm">Ajouter</button></div><ul id="category-list" class="space-y-2"></ul></div></div><div><div class="bg-white p-6 rounded-xl shadow-md border"><h2 class="text-xl font-semibold text-slate-700 mb-4">Gérer les Soldes Initiaux</h2><p class="text-sm text-slate-500 mb-4">Modifiez ici les soldes de départ pour la date de travail actuelle. Ces soldes ne s'appliquent qu'au jour sélectionné.</p><form id="initial-balances-form" class="space-y-4"></form><button id="save-balances-btn" class="mt-6 w-full bg-slate-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-slate-700 shadow-sm">Sauvegarder les soldes pour ce jour</button></div></div><div><div class="bg-white p-6 rounded-xl shadow-md border"><h2 class="text-xl font-semibold text-slate-700 mb-4">Date de Travail</h2><p class="text-sm text-slate-500 mb-4">Changez la date pour consulter ou modifier un journal antérieur.</p><div class="flex gap-4 items-center"><input type="date" id="work-date-input" class="px-3 py-2 border border-slate-300 rounded-lg shadow-sm"><button id="change-date-btn" class="bg-slate-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-slate-700 shadow-sm">Charger la date</button></div></div></div></div></div></div>
         </main>
         <footer class="text-center p-4 text-sm text-slate-500 border-t border-slate-200 bg-slate-100">
             © 2025 SudContractors. Tous droits réservés.
@@ -125,7 +125,7 @@
                 accueil: { form: document.getElementById('transaction-form'), body: document.getElementById('transactions-body'), header: document.getElementById('report-header'), footer: document.getElementById('report-footer'), categorieSelect: document.getElementById('categorie'), compteSelect: document.getElementById('moyen-paiement'), cardsContainer: document.getElementById('account-cards-container'), printContent: document.getElementById('print-content') },
                 synthese: { category: document.getElementById('summary-by-category'), chartCanvas: document.getElementById('summary-chart'), recapTable: document.getElementById('summary-recap-table') },
                 historique: { list: document.getElementById('history-list'), filterDateInput: document.getElementById('history-filter-date'), filterBtn: document.getElementById('filter-history-btn'), clearFilterBtn: document.getElementById('clear-filter-btn') },
-                parametrage: { newCatInput: document.getElementById('new-category-input'), addCatBtn: document.getElementById('add-category-btn'), catList: document.getElementById('category-list'), newAccInput: document.getElementById('new-account-input'), addAccBtn: document.getElementById('add-account-btn'), accList: document.getElementById('account-list'), workDateInput: document.getElementById('work-date-input'), changeDateBtn: document.getElementById('change-date-btn') },
+                parametrage: { newCatInput: document.getElementById('new-category-input'), addCatBtn: document.getElementById('add-category-btn'), catList: document.getElementById('category-list'), newAccInput: document.getElementById('new-account-input'), addAccBtn: document.getElementById('add-account-btn'), accList: document.getElementById('account-list'), workDateInput: document.getElementById('work-date-input'), changeDateBtn: document.getElementById('change-date-btn'), initialBalancesForm: document.getElementById('initial-balances-form'), saveBalancesBtn: document.getElementById('save-balances-btn') },
                 modals: {
                     edit: { container: document.getElementById('edit-modal'), content: document.getElementById('edit-modal-content'), form: document.getElementById('edit-form'), cancelBtn: document.getElementById('cancel-edit-btn'), id: document.getElementById('edit-id'), numPiece: document.getElementById('edit-num-piece'), libelle: document.getElementById('edit-libelle'), categorie: document.getElementById('edit-categorie'), montant: document.getElementById('edit-montant') },
                     confirm: { container: document.getElementById('confirm-modal'), content: document.getElementById('confirm-modal').querySelector('.modal-content'), message: document.getElementById('confirm-message'), confirmBtn: document.getElementById('confirm-btn'), cancelBtn: document.getElementById('cancel-confirm-btn') },
@@ -198,17 +198,39 @@
                 loadJournal(date) {
                     if (unsubscribeJournalListener) unsubscribeJournalListener();
                     if (!state.userId) return;
-                    
+
+                    // Before switching, calculate the final balances of the current day
+                    const finalBalancesOfPreviousDay = state.accounts.reduce((acc, accountName) => {
+                        const txs = state.transactions.filter(t => t.compte === accountName);
+                        const entrees = txs.filter(t => t.type === 'entree').reduce((s, t) => s + t.montant, 0);
+                        const sorties = txs.filter(t => t.type === 'sortie').reduce((s, t) => s + t.montant, 0);
+                        acc[accountName] = (state.soldesInitiaux[accountName] || 0) + entrees - sorties;
+                        return acc;
+                    }, {});
+
                     const journalRef = doc(db, `artifacts/${appId}/users/${state.userId}/journals`, date);
                     
                     unsubscribeJournalListener = onSnapshot(journalRef, (docSnap) => {
-                        const defaultJournal = { transactions: [], soldesInitiaux: state.soldesInitiaux || {}, transactionIdCounter: 0 };
-                        const data = docSnap.exists() ? docSnap.data() : defaultJournal;
-                        
                         state.workingDate = date;
-                        state.transactions = data.transactions || [];
-                        state.soldesInitiaux = data.soldesInitiaux || state.accounts.reduce((acc, a) => ({ ...acc, [a]: 0 }), {});
-                        state.transactionIdCounter = data.transactionIdCounter || 0;
+
+                        if (docSnap.exists()) {
+                            // This is an existing journal, load its data
+                            const data = docSnap.data();
+                            state.transactions = data.transactions || [];
+                            state.soldesInitiaux = data.soldesInitiaux || {};
+                            state.transactionIdCounter = data.transactionIdCounter || 0;
+                        } else {
+                            // This is a new day, carry over the final balances from the previous day
+                            state.transactions = [];
+                            state.transactionIdCounter = 0;
+                            state.soldesInitiaux = finalBalancesOfPreviousDay;
+                            // Automatically save this new day's journal with the carried-over balances
+                            this.saveJournal(date, {
+                                transactions: state.transactions,
+                                soldesInitiaux: state.soldesInitiaux,
+                                transactionIdCounter: state.transactionIdCounter
+                            });
+                        }
                         
                         UIElements.dateDisplay.textContent = new Date(date + 'T00:00:00').toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
                         UIElements.parametrage.workDateInput.value = date;
@@ -267,6 +289,16 @@
                 renderReportTable();
                 categoryManager.populateDropdowns();
                 accountManager.populateDropdowns();
+                renderInitialBalancesForm();
+            };
+
+            const renderInitialBalancesForm = () => {
+                UIElements.parametrage.initialBalancesForm.innerHTML = state.accounts.map(acc => `
+                    <div>
+                        <label for="balance-${acc}" class="block text-sm font-medium text-slate-600 mb-1">${acc}</label>
+                        <input type="number" id="balance-${acc}" name="${acc}" value="${state.soldesInitiaux[acc] || 0}" class="w-full px-3 py-2 border border-slate-300 rounded-lg shadow-sm">
+                    </div>
+                `).join('');
             };
 
             const renderAccountCards = () => {
@@ -382,7 +414,7 @@
 
             const navigation = {
                 init() { UIElements.mainNav.addEventListener('click', (e) => { const l = e.target.closest('a'); if (l) { e.preventDefault(); this.to(l.getAttribute('href')); } }); },
-                to(hash) { const id = hash.substring(1); UIElements.pages.forEach(p => p.classList.toggle('active', p.id === id)); UIElements.mainNav.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.getAttribute('href') === hash)); if (id === 'synthese') this.updateSynthese(); if (id === 'historique') this.updateHistorique(); if (id === 'parametrage') { categoryManager.render(); accountManager.render(); } },
+                to(hash) { const id = hash.substring(1); UIElements.pages.forEach(p => p.classList.toggle('active', p.id === id)); UIElements.mainNav.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.getAttribute('href') === hash)); if (id === 'synthese') this.updateSynthese(); if (id === 'historique') this.updateHistorique(); if (id === 'parametrage') { categoryManager.render(); accountManager.render(); renderInitialBalancesForm(); } },
                 updateSynthese() { /* ... (same as original, no changes needed) ... */ },
                 async updateHistorique(filterDate = null) {
                     UIElements.historique.list.innerHTML = `<li class="p-3 text-slate-500">Chargement de l'historique...</li>`;
@@ -649,6 +681,16 @@
                 });
                 UIElements.modals.balance.cancelBtn.addEventListener('click', () => modalManager.close(UIElements.modals.balance));
 
+                UIElements.parametrage.saveBalancesBtn.addEventListener('click', () => {
+                    const formData = new FormData(UIElements.parametrage.initialBalancesForm);
+                    for (let [account, value] of formData.entries()) {
+                        state.soldesInitiaux[account] = parseFloat(value) || 0;
+                    }
+                    renderAll();
+                    saveCurrentJournal(); // Save the journal after updating balances from settings
+                    showToast("Soldes initiaux sauvegardés pour ce jour !");
+                });
+
                 UIElements.parametrage.changeDateBtn.addEventListener('click', () => {
                     const newDate = UIElements.parametrage.workDateInput.value;
                     if (newDate) {
@@ -673,4 +715,3 @@
     </script>
 </body>
 </html>
-
