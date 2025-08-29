@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journal de Caisse</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+        .nav-link.active { background-color: #334155; }
+        .page { display: none; }
+        .page.active { display: block; }
+        #edit-modal, #toast-container { transition: opacity 0.3s ease; }
+        @keyframes slideInUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .new-row { animation: slideInUp 0.5s ease-out; }
+        @media print {
+            @page {
+                size: landscape;
+                margin: 1cm;
+            }
+            body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body class="flex h-screen bg-slate-100">
+
+    <svg width="0" height="0" class="absolute"><defs>
+        <symbol id="icon-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></symbol>
+        <symbol id="icon-pie-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></symbol>
+        <symbol id="icon-history" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l4 2"></path></symbol>
+        <symbol id="icon-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2l-.15.08a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1 0-2l.15.08a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></symbol>
+    </defs></svg>
+
+    <aside class="w-64 bg-slate-800 text-white flex flex-col flex-shrink-0">
+        <div class="p-6 text-2xl font-bold border-b border-slate-700 text-center">
+            Menu
+        </div>
+        <nav id="main-nav" class="flex-1 p-4 space-y-2">
+            <a href="#accueil" class="nav-link flex items-center px-4 py-2.5 text-sm font-medium rounded-lg hover:bg-slate-700 active"><svg class="w-5 h-5 mr-3"><use href="#icon-home"></use></svg>Accueil</a>
+            <a href="#synthese" class="nav-link flex items-center px-4 py-2.5 text-sm font-medium rounded-lg hover:bg-slate-700"><svg class="w-5 h-5 mr-3"><use href="#icon-pie-chart"></use></svg>Synthèse</a>
+            <a href="#historique" class="nav-link flex items-center px-4 py-2.5 text-sm font-medium rounded-lg hover:bg-slate-700"><svg class="w-5 h-5 mr-3"><use href="#icon-history"></use></svg>Historique</a>
+            <a href="#parametrage" class="nav-link flex items-center px-4 py-2.5 text-sm font-medium rounded-lg hover:bg-slate-700"><svg class="w-5 h-5 mr-3"><use href="#icon-settings"></use></svg>Paramétrage</a>
+        </nav>
+    </aside>
+
+    <div class="flex-1 flex flex-col">
+        <main class="flex-1 overflow-y-auto">
+            <div id="accueil" class="page active p-6 lg:p-8">
+                <div class="max-w-7xl mx-auto">
+                    <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+                        <div><h1 class="text-3xl font-bold text-slate-800">Journal de Caisse</h1><p id="report-date-display" class="mt-2 text-slate-600 font-medium"></p></div>
+                        <div><span class="text-sm text-slate-500 mt-2 sm:mt-0 block">Utilisateur par défaut</span></div>
+                    </header>
+                    <section id="soldes-actuels" class="mb-8"><h2 class="text-xl font-semibold text-slate-700 mb-4">Soldes Initiaux (Cliquer pour modifier)</h2><div id="account-cards-container" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div></section>
+                    <section id="saisie-journaliere" class="mb-8"><div class="bg-white p-6 rounded-xl shadow-md border"><h2 class="text-xl font-semibold text-slate-700 mb-1">Saisie Journalière</h2><form id="transaction-form" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end mt-6"><div class="md:col-span-2 lg:col-span-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"><div><label for="num-piece" class="block text-sm font-medium text-slate-600 mb-1">N° Pièce</label><input type="text" id="num-piece" class="w-full px-3 py-2 border border-slate-300 rounded-lg shadow-sm"></div><div class="lg:col-span-2"><label for="libelle" class="block text-sm font-medium text-slate-600 mb-1">Libellé</label><input type="text" id="libelle" class="w-full px-3 py-2 border border-slate-300 rounded-lg shadow-sm" required></div><div><label for="categorie" class="block text-sm font-medium text-slate-600 mb-1">Catégorie</label><select id="categorie" class="w-full px-3 py-2 border border-slate-300 bg-white rounded-lg shadow-sm"></select></div></div><div><label for="moyen-paiement" class="block text-sm font-medium text-slate-600 mb-1">Compte</label><select id="moyen-paiement" class="w-full px-3 py-2 border border-slate-300 bg-white rounded-lg shadow-sm"></select></div><div><label for="montant-entree" class="block text-sm font-medium text-slate-600 mb-1">Entrée</label><input type="number" id="montant-entree" placeholder="0" class="w-full px-3 py-2 border border-slate-300 rounded-lg shadow-sm"></div><div><label for="montant-sortie" class="block text-sm font-medium text-slate-600 mb-1">Sortie</label><input type="number" id="montant-sortie" placeholder="0" class="w-full px-3 py-2 border border-slate-300 rounded-lg shadow-sm"></div><div class="lg:col-span-2"><button type="submit" class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 shadow-sm">Ajouter l'opération</button></div></form></div></section>
+                    <section id="rapport-journalier"><h2 class="text-xl font-semibold text-slate-700 mb-4">Rapport Journalier</h2><div class="bg-white rounded-xl shadow-md border overflow-hidden"><div id="print-content" class="overflow-x-auto"><table class="w-full text-sm text-left text-slate-600"><thead id="report-header" class="text-xs text-slate-700 uppercase bg-slate-100"></thead><tbody id="transactions-body"></tbody><tfoot id="report-footer" class="font-bold bg-slate-100"></tfoot></table></div></div><div class="mt-6 flex flex-wrap gap-4"><button id="prev-day-btn" class="bg-slate-500 text-white font-bold py-2 px-5 rounded-full hover:bg-slate-600 shadow-sm">Jour Précédent</button><button id="next-day-btn" class="bg-slate-500 text-white font-bold py-2 px-5 rounded-full hover:bg-slate-600 shadow-sm">Jour Suivant</button><button id="save-btn" class="bg-blue-600 text-white font-bold py-2 px-5 rounded-full hover:bg-blue-700 shadow-sm">Clôturer et Sauvegarder</button><button id="print-btn" class="bg-green-600 text-white font-bold py-2 px-5 rounded-full hover:bg-green-700 shadow-sm">Imprimer le rapport</button></div></section>
+                </div>
+            </div>
+            <div id="synthese" class="page p-6 lg:p-8"><div class="max-w-7xl mx-auto"><h1 class="text-3xl font-bold text-slate-800 mb-8">Synthèse du Jour</h1><div class="space-y-8"><div class="bg-white p-6 rounded-xl shadow-md border"><h2 class="text-xl font-semibold text-slate-700 mb-4">Récapitulatif des Comptes</h2><div id="summary-recap-table" class="overflow-x-auto"></div></div><div class="grid grid-cols-1 lg:grid-cols-2 gap-8"><div class="bg-white p-6 rounded-xl shadow-md border"><h2 class="text-xl font-semibold text-slate-700 mb-4">Résumé par Catégorie</h2><div id="summary-by-category"></div></div><div class="bg-white p-6 rounded-xl shadow-md border flex flex-col items-center justify-center"><h2 class="text-xl font-semibold text-slate-700 mb-4">Entrées vs Sorties</h2><div class="w-full max-w-xs"><canvas id="summary-chart"></canvas></div></div></div></div></div></div>
+            <div id="historique" class="page p-6 lg:p-8"><div class="max-w-7xl mx-auto"><h1 class="text-3xl font-bold text-slate-800 mb-8">Historique des Journaux</h1><div class="bg-white p-6 rounded-xl shadow-md border"><div class="flex gap-4 mb-6 items-center"><input type="date" id="history-filter-date" class="px-3 py-2 border border-slate-300 rounded-lg shadow-sm"><button id="filter-history-btn" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 shadow-sm">Rechercher</button><button id="clear-filter-btn" class="bg-slate-200 text-slate-700 font-bold py-2 px-4 rounded-lg hover:bg-slate-300 shadow-sm">Afficher tout</button></div><ul id="history-list" class="space-y-2"></ul></div></div></div>
+            <div id="parametrage" class="page p-6 lg:p-8"><div class="max-w-4xl mx-auto"><h1 class="text-3xl font-bold text-slate-800 mb-8">Paramétrage</h1><div class="space-y-8"><div><div class="bg-white p-6 rounded-xl shadow-md border"><h2 class="text-xl font-semibold text-slate-700 mb-4">Gérer les Comptes</h2><div class="flex gap-4 mb-6"><input type="text" id="new-account-input" placeholder="Nom du nouveau compte" class="flex-grow px-3 py-2 border border-slate-300 rounded-lg shadow-sm"><button id="add-account-btn" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 shadow-sm">Ajouter</button></div><ul id="account-list" class="space-y-2"></ul></div></div><div><div class="bg-white p-6 rounded-xl shadow-md border"><h2 class="text-xl font-semibold text-slate-700 mb-4">Gérer les Catégories</h2><div class="flex gap-4 mb-6"><input type="text" id="new-category-input" placeholder="Nouvelle catégorie" class="flex-grow px-3 py-2 border border-slate-300 rounded-lg shadow-sm"><button id="add-category-btn" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 shadow-sm">Ajouter</button></div><ul id="category-list" class="space-y-2"></ul></div></div><div><div class="bg-white p-6 rounded-xl shadow-md border"><h2 class="text-xl font-semibold text-slate-700 mb-4">Gérer les Soldes Initiaux</h2><form id="initial-balances-form" class="space-y-4"></form><button id="save-balances-btn" class="mt-4 w-full bg-slate-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-slate-700 shadow-sm">Sauvegarder les soldes</button></div></div><div><div class="bg-white p-6 rounded-xl shadow-md border"><h2 class="text-xl font-semibold text-slate-700 mb-4">Date de Travail</h2><p class="text-sm text-slate-500 mb-4">Changez la date pour consulter ou modifier un journal antérieur.</p><div class="flex gap-4 items-center"><input type="date" id="work-date-input" class="px-3 py-2 border border-slate-300 rounded-lg shadow-sm"><button id="change-date-btn" class="bg-slate-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-slate-700 shadow-sm">Charger la date</button></div></div></div></div></div></div>
+            
+            <div id="edit-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden opacity-0"><div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg transform scale-95" id="edit-modal-content"><h2 class="text-xl font-bold text-slate-800 mb-4">Modifier l'opération</h2><form id="edit-form"><input type="hidden" id="edit-id"><div class="space-y-4"><div><label for="edit-num-piece" class="block text-sm font-medium text-slate-600 mb-1">N° Pièce</label><input type="text" id="edit-num-piece" class="w-full px-3 py-2 border border-slate-300 rounded-lg shadow-sm"></div><div><label for="edit-libelle" class="block text-sm font-medium text-slate-600 mb-1">Libellé</label><input type="text" id="edit-libelle" class="w-full px-3 py-2 border border-slate-300 rounded-lg shadow-sm" required></div><div><label for="edit-categorie" class="block text-sm font-medium text-slate-600 mb-1">Catégorie</label><select id="edit-categorie" class="w-full px-3 py-2 border border-slate-300 bg-white rounded-lg shadow-sm"></select></div><div><label for="edit-montant" class="block text-sm font-medium text-slate-600 mb-1">Montant</label><input type="number" id="edit-montant" class="w-full px-3 py-2 border border-slate-300 rounded-lg shadow-sm" required></div></div><div class="mt-6 flex justify-end space-x-3"><button type="button" id="cancel-edit-btn" class="bg-slate-100 text-slate-700 font-bold py-2 px-4 rounded-lg hover:bg-slate-200">Annuler</button><button type="submit" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Sauvegarder</button></div></form></div></div>
+        </main>
+        <footer class="text-center p-4 text-sm text-slate-500 border-t border-slate-200 bg-slate-100">
+            © 2025 Votre Entreprise. Tous droits réservés.
+        </footer>
+    </div>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const UIElements = {
+            mainNav: document.getElementById('main-nav'), pages: document.querySelectorAll('.page'), dateDisplay: document.getElementById('report-date-display'),
+            accueil: { form: document.getElementById('transaction-form'), body: document.getElementById('transactions-body'), header: document.getElementById('report-header'), footer: document.getElementById('report-footer'), categorieSelect: document.getElementById('categorie'), compteSelect: document.getElementById('moyen-paiement'), cardsContainer: document.getElementById('account-cards-container'), printContent: document.getElementById('print-content') },
+            synthese: { category: document.getElementById('summary-by-category'), chartCanvas: document.getElementById('summary-chart'), recapTable: document.getElementById('summary-recap-table') },
+            historique: { list: document.getElementById('history-list'), filterDateInput: document.getElementById('history-filter-date'), filterBtn: document.getElementById('filter-history-btn'), clearFilterBtn: document.getElementById('clear-filter-btn') },
+            parametrage: { newCatInput: document.getElementById('new-category-input'), addCatBtn: document.getElementById('add-category-btn'), catList: document.getElementById('category-list'), newAccInput: document.getElementById('new-account-input'), addAccBtn: document.getElementById('add-account-btn'), accList: document.getElementById('account-list'), workDateInput: document.getElementById('work-date-input'), changeDateBtn: document.getElementById('change-date-btn'), initialBalancesForm: document.getElementById('initial-balances-form'), saveBalancesBtn: document.getElementById('save-balances-btn') },
+            modal: { container: document.getElementById('edit-modal'), content: document.getElementById('edit-modal-content'), form: document.getElementById('edit-form'), cancelBtn: document.getElementById('cancel-edit-btn'), id: document.getElementById('edit-id'), numPiece: document.getElementById('edit-num-piece'), libelle: document.getElementById('edit-libelle'), categorie: document.getElementById('edit-categorie'), montant: document.getElementById('edit-montant') },
+            buttons: { save: document.getElementById('save-btn'), print: document.getElementById('print-btn'), prevDay: document.getElementById('prev-day-btn'), nextDay: document.getElementById('next-day-btn') },
+        };
+        let summaryChart = null;
+        let state = { transactions: [], soldesInitiaux: {}, transactionIdCounter: 0, categories: [], accounts: [], workingDate: getToday() };
+        function getToday() { return new Date().toISOString().split('T')[0]; }
+        const getInitialState = () => ({ transactions: [], soldes: state.accounts.reduce((acc, a) => ({ ...acc, [a]: 0 }), {}), transactionIdCounter: 0 });
+        const formatCurrency = (v) => new Intl.NumberFormat('fr-FR').format(parseFloat(v) || 0);
+        const showToast = (m, t = 's') => Toastify({ text: m, duration: 3000, gravity: "bottom", position: "right", style: { background: t === 's' ? "#10B981" : "#EF4444" } }).showToast();
+
+        const storage = {
+            keys: { journal: (d) => `jc-journal-${d}`, cats: 'jc-cats', accs: 'jc-accs' },
+            saveJournal(d) { localStorage.setItem(this.keys.journal(d), JSON.stringify({ txs: state.transactions, soldes: state.soldesInitiaux, id: state.transactionIdCounter })); showToast(`Journal du ${d} sauvegardé !`); },
+            loadJournal(d) {
+                const data = localStorage.getItem(this.keys.journal(d));
+                const savedJournal = data ? JSON.parse(data) : getInitialState();
+                state.workingDate = d;
+                state.soldesInitiaux = getInitialState().soldes;
+                state.transactions = savedJournal.txs || [];
+                state.transactionIdCounter = savedJournal.id || 0;
+                if (savedJournal.soldes) {
+                    for (const acc in savedJournal.soldes) {
+                        if (state.soldesInitiaux.hasOwnProperty(acc)) {
+                            state.soldesInitiaux[acc] = savedJournal.soldes[acc];
+                        }
+                    }
+                }
+                UIElements.dateDisplay.textContent = new Date(d).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                UIElements.parametrage.workDateInput.value = d;
+                renderAll();
+            },
+            saveCats() { localStorage.setItem(this.keys.cats, JSON.stringify(state.categories)); },
+            loadCats() { state.categories = JSON.parse(localStorage.getItem(this.keys.cats)) || ["Achat", "Règlement clients", "Dépenses diverses"]; },
+            saveAccs() { localStorage.setItem(this.keys.accs, JSON.stringify(state.accounts)); },
+            loadAccs() { state.accounts = JSON.parse(localStorage.getItem(this.keys.accs)) || ["Caisse", "Wave", "Orange Money"]; }
+        };
+
+        const manager = (type, ui, stateKey) => ({
+            init() { ui.addBtn.addEventListener('click', () => this.add()); ui.list.addEventListener('click', (e) => { if (e.target.classList.contains(`delete-${type}-btn`)) this.remove(e.target.dataset.name); }); },
+            add() { const name = ui.input.value.trim(); if (name && !state[stateKey].includes(name)) { state[stateKey].push(name); storage[type === 'cat' ? 'saveCats' : 'saveAccs'](); this.render(); ui.input.value = ''; showToast(`${type === 'cat' ? 'Catégorie' : 'Compte'} ajouté.`); renderAll(); } },
+            remove(name) { state[stateKey] = state[stateKey].filter(i => i !== name); storage[type === 'cat' ? 'saveCats' : 'saveAccs'](); this.render(); showToast(`${type === 'cat' ? 'Catégorie' : 'Compte'} supprimé.`, 'e'); renderAll(); },
+            render() { ui.list.innerHTML = state[stateKey].map(name => `<li class="flex justify-between items-center p-2 bg-slate-50 rounded-lg"><span>${name}</span><button data-name="${name}" class="delete-${type}-btn text-red-500 font-bold">&times;</button></li>`).join(''); this.populateDropdowns(); },
+            populateDropdowns() { if (ui.dropdowns) { const html = state[stateKey].map(name => `<option value="${name}">${name}</option>`).join(''); ui.dropdowns.forEach(dd => dd.innerHTML = html); } }
+        });
+        const categoryManager = manager('cat', { addBtn: UIElements.parametrage.addCatBtn, input: UIElements.parametrage.newCatInput, list: UIElements.parametrage.catList, dropdowns: [UIElements.accueil.categorieSelect, UIElements.modal.categorie] }, 'categories');
+        const accountManager = manager('acc', { addBtn: UIElements.parametrage.addAccBtn, input: UIElements.parametrage.newAccInput, list: UIElements.parametrage.accList, dropdowns: [UIElements.accueil.compteSelect] }, 'accounts');
+
+        const navigation = {
+            init() { UIElements.mainNav.addEventListener('click', (e) => { const l = e.target.closest('a'); if (l) { e.preventDefault(); this.to(l.getAttribute('href')); } }); },
+            to(hash) { const id = hash.substring(1); UIElements.pages.forEach(p => p.classList.toggle('active', p.id === id)); UIElements.mainNav.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.getAttribute('href') === hash)); if (id === 'synthese') this.updateSynthese(); if (id === 'historique') this.updateHistorique(); if (id === 'parametrage') { categoryManager.render(); accountManager.render(); renderInitialBalancesForm(); } },
+            updateSynthese() {
+                let totalE = 0, totalS = 0;
+                state.transactions.forEach(tx => {
+                    if (tx.type === 'entree') totalE += tx.montant;
+                    else totalS += tx.montant;
+                });
+                const categorySummary = state.categories.reduce((a, c) => ({ ...a, [c]: { e: 0, s: 0 } }), {});
+                state.transactions.forEach(tx => {
+                    if (!categorySummary[tx.categorie]) categorySummary[tx.categorie] = { e: 0, s: 0 };
+                    if (tx.type === 'entree') categorySummary[tx.categorie].e += tx.montant;
+                    else categorySummary[tx.categorie].s += tx.montant;
+                });
+                UIElements.synthese.category.innerHTML = `<ul class="space-y-2">${Object.entries(categorySummary).map(([c, t]) => `<li class="p-2 bg-slate-50 rounded-lg"><div class="font-semibold">${c}</div><div class="flex justify-between text-sm"><span class="text-green-600">Entrées: ${formatCurrency(t.e)}</span><span class="text-red-600">Sorties: ${formatCurrency(t.s)}</span></div></li>`).join('')}</ul>`;
+                if (summaryChart) summaryChart.destroy();
+                summaryChart = new Chart(UIElements.synthese.chartCanvas, { type: 'doughnut', data: { labels: ['Entrées', 'Sorties'], datasets: [{ data: [totalE, totalS], backgroundColor: ['rgba(16, 185, 129, 0.7)', 'rgba(239, 68, 68, 0.7)'], borderColor: ['rgba(16, 185, 129, 1)', 'rgba(239, 68, 68, 1)'], borderWidth: 1 }] }, options: { responsive: true, maintainAspectRatio: true, cutout: '60%' } });
+                let recapHtml = `<table class="w-full text-sm text-left text-slate-600"><thead class="text-xs text-slate-700 uppercase bg-slate-100"><tr><th class="px-4 py-3">Compte</th><th class="px-4 py-3 text-right">Solde Initial</th><th class="px-4 py-3 text-right text-green-600">Total Entrées</th><th class="px-4 py-3 text-right text-red-600">Total Sorties</th><th class="px-4 py-3 text-right">Solde Final</th></tr></thead><tbody>`;
+                state.accounts.forEach(acc => {
+                    const txs = state.transactions.filter(t => t.compte === acc);
+                    const entrees = txs.filter(t => t.type === 'entree').reduce((s, t) => s + t.montant, 0);
+                    const sorties = txs.filter(t => t.type === 'sortie').reduce((s, t) => s + t.montant, 0);
+                    const soldeInitial = state.soldesInitiaux[acc] || 0;
+                    const soldeFinal = soldeInitial + entrees - sorties;
+                    recapHtml += `<tr class="bg-white border-b"><td class="px-4 py-2 font-medium">${acc}</td><td class="px-4 py-2 text-right">${formatCurrency(soldeInitial)}</td><td class="px-4 py-2 text-right text-green-600">${formatCurrency(entrees)}</td><td class="px-4 py-2 text-right text-red-600">${formatCurrency(sorties)}</td><td class="px-4 py-2 text-right font-semibold">${formatCurrency(soldeFinal)}</td></tr>`;
+                });
+                recapHtml += '</tbody></table>';
+                UIElements.synthese.recapTable.innerHTML = recapHtml;
+            },
+            updateHistorique(filterDate = null) {
+                UIElements.historique.list.innerHTML = '';
+                let keys = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.startsWith('jc-journal-')) {
+                        keys.push(key);
+                    }
+                }
+                keys.sort().reverse();
+                keys.forEach(key => {
+                    const date = key.replace('jc-journal-', '');
+                    if (!filterDate || date === filterDate) {
+                        const li = document.createElement('li');
+                        li.className = 'p-3 bg-slate-50 rounded-lg hover:bg-slate-100 cursor-pointer';
+                        li.textContent = new Date(date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                        li.dataset.date = date;
+                        UIElements.historique.list.appendChild(li);
+                    }
+                });
+                if (UIElements.historique.list.innerHTML === '') {
+                    UIElements.historique.list.innerHTML = `<li class="p-3 text-slate-500">Aucun rapport trouvé pour cette date.</li>`;
+                }
+            }
+        };
+        
+        const modal = {
+            open(id) {
+                const tx = state.transactions.find(t => t.id === id);
+                if (!tx) return;
+                UIElements.modal.id.value = tx.id;
+                UIElements.modal.numPiece.value = tx.numPiece;
+                UIElements.modal.libelle.value = tx.libelle;
+                UIElements.modal.categorie.value = tx.categorie;
+                UIElements.modal.montant.value = tx.montant;
+                UIElements.modal.container.classList.remove('hidden');
+                setTimeout(() => { UIElements.modal.container.classList.remove('opacity-0'); UIElements.modal.content.classList.remove('scale-95'); }, 10);
+            },
+            close() {
+                UIElements.modal.container.classList.add('opacity-0');
+                UIElements.modal.content.classList.add('scale-95');
+                setTimeout(() => UIElements.modal.container.classList.add('hidden'), 300);
+            },
+            init() {
+                UIElements.modal.form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const id = parseInt(UIElements.modal.id.value);
+                    const txIndex = state.transactions.findIndex(t => t.id === id);
+                    if (txIndex > -1) {
+                        state.transactions[txIndex] = { ...state.transactions[txIndex], numPiece: UIElements.modal.numPiece.value, libelle: UIElements.modal.libelle.value, categorie: UIElements.modal.categorie.value, montant: parseFloat(UIElements.modal.montant.value) || 0 };
+                    }
+                    this.close();
+                    renderAll();
+                    showToast("Opération modifiée !");
+                });
+                UIElements.modal.cancelBtn.addEventListener('click', () => this.close());
+            }
+        };
+
+        const renderAll = () => {
+            renderAccountCards();
+            renderReportTable();
+            categoryManager.populateDropdowns();
+            accountManager.populateDropdowns();
+            renderInitialBalancesForm();
+        };
+
+        const renderAccountCards = () => {
+            UIElements.accueil.cardsContainer.innerHTML = state.accounts.map(acc => `<div id="card-${acc}" data-name="${acc}" class="bg-white p-6 rounded-xl shadow-md border transition-all cursor-pointer"><h3 class="text-sm font-medium text-slate-500">${acc}</h3><p id="solde-${acc}-card" class="text-3xl font-bold mt-2">0</p></div>`).join('');
+            state.accounts.forEach(acc => document.getElementById(`card-${acc}`).addEventListener('click', () => editInitialBalance(acc)));
+        };
+
+        const renderReportTable = () => {
+            UIElements.accueil.header.innerHTML = `<tr><th class="px-4 py-3" rowspan="2">N° PIÈCE</th><th class="px-4 py-3" rowspan="2">Libellé</th><th class="px-4 py-3" rowspan="2">Catégorie</th>${state.accounts.map(acc => `<th class="px-4 py-3 text-center border-l" colspan="2">${acc}</th>`).join('')}<th rowspan="2"></th></tr><tr>${state.accounts.map(() => `<th class="px-4 py-3 text-center border-l text-green-600">Entrées</th><th class="px-4 py-3 text-center text-red-600">Sorties</th>`).join('')}</tr>`;
+            UIElements.accueil.body.innerHTML = `<tr class="bg-slate-50 font-semibold"><td class="px-4 py-2" colspan="3">Solde initial</td>${state.accounts.map(acc => `<td class="px-4 py-2 text-center text-slate-500" colspan="2">${formatCurrency(state.soldesInitiaux[acc] || 0)}</td>`).join('')}<td></td></tr>`;
+            
+            const sortedTransactions = [...state.transactions].sort((a, b) => {
+                if (a.compte === 'Caisse' && b.compte !== 'Caisse') return -1;
+                if (a.compte !== 'Caisse' && b.compte === 'Caisse') return 1;
+                return a.id - b.id;
+            });
+
+            sortedTransactions.forEach(tx => {
+                const row = UIElements.accueil.body.insertRow(-1);
+                row.className = 'bg-white border-b border-slate-200 hover:bg-slate-50 new-row';
+                let cells = `<td class="px-4 py-2">${tx.numPiece}</td><td class="px-4 py-2">${tx.libelle}</td><td class="px-4 py-2 text-xs text-slate-500">${tx.categorie}</td>`;
+                state.accounts.forEach(acc => {
+                    if (acc === tx.compte) {
+                        cells += tx.type === 'entree' ? `<td class="px-4 py-2 text-center text-green-600">${formatCurrency(tx.montant)}</td><td class="px-4 py-2 text-center"></td>` : `<td class="px-4 py-2 text-center"></td><td class="px-4 py-2 text-center text-red-600">${formatCurrency(tx.montant)}</td>`;
+                    } else { cells += `<td class="px-4 py-2"></td><td class="px-4 py-2"></td>`; }
+                });
+                cells += `<td class="px-2 py-2 text-center"><button class="edit-btn text-blue-500 p-1" data-id="${tx.id}">✏️</button><button class="delete-btn text-red-500 p-1 font-bold" data-id="${tx.id}">&times;</button></td>`;
+                row.innerHTML = cells;
+            });
+            UIElements.accueil.footer.innerHTML = `<tr class="border-t-2 border-slate-300"><td class="px-4 py-3" colspan="3">TOTAL OPÉRATIONS</td>${state.accounts.map(acc => { const txs = state.transactions.filter(t => t.compte === acc); const e = txs.filter(t => t.type === 'entree').reduce((s, t) => s + t.montant, 0); const s = txs.filter(t => t.type === 'sortie').reduce((s, t) => s + t.montant, 0); return `<td class="px-4 py-3 text-center text-green-600">${formatCurrency(e)}</td><td class="px-4 py-3 text-center text-red-600">${formatCurrency(s)}</td>`; }).join('')}<td></td></tr>`;
+            updateTotals();
+        };
+
+        const updateTotals = () => {
+            state.accounts.forEach(acc => {
+                const txs = state.transactions.filter(t => t.compte === acc);
+                const entrees = txs.filter(t => t.type === 'entree').reduce((s, t) => s + t.montant, 0);
+                const sorties = txs.filter(t => t.type === 'sortie').reduce((s, t) => s + t.montant, 0);
+                const soldeFinal = (state.soldesInitiaux[acc] || 0) + entrees - sorties;
+                const card = document.getElementById(`card-${acc}`);
+                const cardText = document.getElementById(`solde-${acc}-card`);
+                if(card && cardText){
+                    cardText.textContent = formatCurrency(soldeFinal);
+                    card.className = 'bg-white p-6 rounded-xl shadow-md border transition-all cursor-pointer';
+                    cardText.className = 'text-3xl font-bold mt-2';
+                    if (soldeFinal > 0) { card.classList.add('bg-green-50', 'border-green-300'); cardText.classList.add('text-green-800'); }
+                    else if (soldeFinal < 0) { card.classList.add('bg-red-50', 'border-red-300'); cardText.classList.add('text-red-800'); }
+                    else { card.classList.add('bg-slate-50', 'border-slate-300'); cardText.classList.add('text-slate-800'); }
+                }
+            });
+        };
+
+        const editInitialBalance = (acc) => {
+            const soldeActuel = state.soldesInitiaux[acc] || 0;
+            const newSoldeStr = prompt(`Modifier le solde initial pour ${acc}:`, soldeActuel);
+            if (newSoldeStr !== null) {
+                const newSolde = parseFloat(newSoldeStr.replace(/,/g, '.'));
+                if (!isNaN(newSolde)) { state.soldesInitiaux[acc] = newSolde; renderAll(); }
+                else { showToast("Veuillez entrer un nombre valide.", "e"); }
+            }
+        };
+
+        const renderInitialBalancesForm = () => {
+            UIElements.parametrage.initialBalancesForm.innerHTML = '';
+            state.accounts.forEach(acc => {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <label for="balance-${acc}" class="block text-sm font-medium text-slate-600 mb-1">${acc}</label>
+                    <input type="number" id="balance-${acc}" name="${acc}" value="${state.soldesInitiaux[acc] || 0}" class="w-full px-3 py-2 border border-slate-300 rounded-lg shadow-sm">
+                `;
+                UIElements.parametrage.initialBalancesForm.appendChild(div);
+            });
+        };
+
+        const printReport = () => {
+            const date = new Date(state.workingDate).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            const signatureBlock = `
+                <div class="mt-16 pt-8 grid grid-cols-3 gap-8 text-center text-sm">
+                    <div>
+                        <p class="font-bold">SERVICE FINANCIER</p>
+                        <div class="border-t-2 border-slate-300 mt-16"></div>
+                    </div>
+                    <div>
+                        <p class="font-bold">DIRECTEUR DES OPERATIONS</p>
+                        <div class="border-t-2 border-slate-300 mt-16"></div>
+                    </div>
+                    <div>
+                        <p class="font-bold">DIRECTEUR GENERAL</p>
+                        <div class="border-t-2 border-slate-300 mt-16"></div>
+                    </div>
+                </div>`;
+            
+            const totals = state.accounts.reduce((acc, account) => {
+                const txs = state.transactions.filter(t => t.compte === account);
+                acc[account] = {
+                    entrees: txs.filter(t => t.type === 'entree').reduce((s, t) => s + t.montant, 0),
+                    sorties: txs.filter(t => t.type === 'sortie').reduce((s, t) => s + t.montant, 0)
+                };
+                return acc;
+            }, {});
+
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html><head><title>Rapport de Caisse - ${date}</title>
+                <script src="https://cdn.tailwindcss.com"><\/script>
+                <style>
+                    body { font-family: 'Inter', sans-serif; }
+                    .report-table { width: 100%; border-collapse: collapse; }
+                    .report-table th, .report-table td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+                    .report-table th { background-color: #f2f2f2; }
+                    .text-center { text-align: center; }
+                    .text-right { text-align: right; }
+                    .font-bold { font-weight: bold; }
+                    .text-green-600 { color: #059669; }
+                    .text-red-600 { color: #dc2626; }
+                    @page { margin: 1.5cm; }
+                </style>
+                </head><body>
+                <div class="container mx-auto p-4">
+                    <p class="text-xs text-slate-500 mb-4">Pour un meilleur affichage, choisissez l'orientation "Paysage" dans les options d'impression.</p>
+                    <h1 class="text-3xl font-bold text-center mb-4">Rapport Journalier de Caisse</h1>
+                    <p class="mb-6"><strong>Date:</strong> ${date}</p>
+                    <h2 class="text-2xl font-bold mb-4">Détail des Opérations</h2>
+                    <table class="report-table">
+                        <thead>
+                            <tr>
+                                <th rowspan="2" class="w-1/4"></th>
+                                ${state.accounts.map(acc => `<th colspan="2" class="text-center">${acc}</th>`).join('')}
+                            </tr>
+                            <tr>
+                                ${state.accounts.map(() => `<th class="text-center text-green-600">Entrées</th><th class="text-center text-red-600">Sorties</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="font-bold">Solde initial</td>
+                                ${state.accounts.map(acc => `<td class="text-right text-green-600">${formatCurrency(state.soldesInitiaux[acc] || 0)}</td><td></td>`).join('')}
+                            </tr>
+                            <tr>
+                                <td class="font-bold">Totaux</td>
+                                ${state.accounts.map(acc => `<td class="text-right text-green-600">${formatCurrency(totals[acc].entrees)}</td><td class="text-right text-red-600">${formatCurrency(totals[acc].sorties)}</td>`).join('')}
+                            </tr>
+                            <tr>
+                                <td class="font-bold">Solde final</td>
+                                ${state.accounts.map(acc => {
+                                    const finalBalance = (state.soldesInitiaux[acc] || 0) + totals[acc].entrees - totals[acc].sorties;
+                                    return `<td colspan="2" class="text-center font-bold text-red-600">${formatCurrency(finalBalance)}</td>`;
+                                }).join('')}
+                            </tr>
+                        </tbody>
+                    </table>
+                    ${signatureBlock}
+                </div>
+                </body></html>`);
+
+            printWindow.document.close();
+            setTimeout(() => {
+                printWindow.print();
+                printWindow.close();
+            }, 250);
+        };
+
+        function init() {
+            storage.loadAccs();
+            storage.loadCats();
+            navigation.init();
+            modal.init();
+            categoryManager.init();
+            accountManager.init();
+            storage.loadJournal(getToday());
+
+            UIElements.parametrage.changeDateBtn.addEventListener('click', () => {
+                const newDate = UIElements.parametrage.workDateInput.value;
+                if (newDate) {
+                    storage.loadJournal(newDate);
+                    showToast(`Journal du ${newDate} chargé.`);
+                }
+            });
+            UIElements.parametrage.saveBalancesBtn.addEventListener('click', () => {
+                const formData = new FormData(UIElements.parametrage.initialBalancesForm);
+                for (let [account, value] of formData.entries()) {
+                    state.soldesInitiaux[account] = parseFloat(value) || 0;
+                }
+                renderAll();
+                showToast("Soldes initiaux sauvegardés !");
+            });
+            
+            UIElements.buttons.save.addEventListener('click', () => storage.saveJournal(state.workingDate));
+            UIElements.buttons.print.addEventListener('click', printReport);
+            UIElements.buttons.prevDay.addEventListener('click', () => {
+                const currentDate = new Date(state.workingDate);
+                currentDate.setDate(currentDate.getDate() - 1);
+                storage.loadJournal(currentDate.toISOString().split('T')[0]);
+            });
+            UIElements.buttons.nextDay.addEventListener('click', () => {
+                const currentDate = new Date(state.workingDate);
+                currentDate.setDate(currentDate.getDate() + 1);
+                storage.loadJournal(currentDate.toISOString().split('T')[0]);
+            });
+            
+            UIElements.accueil.form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const data = { numPiece: document.getElementById('num-piece').value, libelle: document.getElementById('libelle').value, categorie: UIElements.accueil.categorieSelect.value, compte: UIElements.accueil.compteSelect.value, entree: parseFloat(document.getElementById('montant-entree').value) || 0, sortie: parseFloat(document.getElementById('montant-sortie').value) || 0 };
+                if (!data.libelle || (data.entree <= 0 && data.sortie <= 0) || (data.entree > 0 && data.sortie > 0)) { showToast("Saisir un libellé et un seul montant.", 'e'); return; }
+                state.transactions.push({ id: ++state.transactionIdCounter, ...data, type: data.entree > 0 ? 'entree' : 'sortie', montant: data.entree > 0 ? data.entree : data.sortie });
+                renderAll();
+                UIElements.accueil.form.reset();
+            });
+            UIElements.accueil.body.addEventListener('click', (e) => {
+                const del = e.target.closest('.delete-btn'), edit = e.target.closest('.edit-btn');
+                if (del) { const id = parseInt(del.dataset.id); if (confirm('Supprimer?')) { state.transactions = state.transactions.filter(tx => tx.id !== id); renderAll(); showToast("Opération supprimée.", "e"); } }
+                if (edit) modal.open(parseInt(edit.dataset.id));
+            });
+            UIElements.historique.list.addEventListener('click', (e) => { if (e.target.tagName === 'LI') { storage.loadJournal(e.target.dataset.date); navigation.to('#accueil'); showToast(`Journal du ${e.target.dataset.date} chargé.`); } });
+            UIElements.historique.filterBtn.addEventListener('click', () => {
+                const filterDate = UIElements.historique.filterDateInput.value;
+                if(filterDate) {
+                    navigation.updateHistorique(filterDate);
+                }
+            });
+            UIElements.historique.clearFilterBtn.addEventListener('click', () => {
+                UIElements.historique.filterDateInput.value = '';
+                navigation.updateHistorique();
+            });
+        }
+        init();
+    });
+    </script>
+</body>
+</html>
