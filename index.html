@@ -13,8 +13,7 @@
         .nav-link.active { background-color: #334155; }
         .page { display: none; }
         .page.active { display: block; }
-        #edit-modal, #confirm-modal, #balance-modal, #loading-overlay, #toast-container { transition: opacity 0.3s ease; }
-        .modal-content { transition: transform 0.3s ease; }
+        #edit-modal, #toast-container { transition: opacity 0.3s ease; }
         @keyframes slideInUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .new-row { animation: slideInUp 0.5s ease-out; }
         @media print {
@@ -31,416 +30,109 @@
 </head>
 <body class="flex h-screen bg-slate-100">
 
-    <!-- SVG Icons Definition -->
     <svg width="0" height="0" class="absolute"><defs>
         <symbol id="icon-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></symbol>
         <symbol id="icon-pie-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></symbol>
         <symbol id="icon-history" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l4 2"></path></symbol>
-        <symbol id="icon-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2l-.15.08a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l-.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1 0-2l.15.08a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></symbol>
+        <symbol id="icon-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2l-.15.08a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1 0-2l.15.08a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></symbol>
     </defs></svg>
 
-    <!-- Sidebar Navigation -->
     <aside class="w-64 bg-slate-800 text-white flex flex-col flex-shrink-0">
-        <div class="p-6 text-2xl font-bold border-b border-slate-700 text-center">Menu</div>
+        <div class="p-6 text-2xl font-bold border-b border-slate-700 text-center">
+            Menu
+        </div>
         <nav id="main-nav" class="flex-1 p-4 space-y-2">
             <a href="#accueil" class="nav-link flex items-center px-4 py-2.5 text-sm font-medium rounded-lg hover:bg-slate-700 active"><svg class="w-5 h-5 mr-3"><use href="#icon-home"></use></svg>Accueil</a>
             <a href="#synthese" class="nav-link flex items-center px-4 py-2.5 text-sm font-medium rounded-lg hover:bg-slate-700"><svg class="w-5 h-5 mr-3"><use href="#icon-pie-chart"></use></svg>Synthèse</a>
             <a href="#historique" class="nav-link flex items-center px-4 py-2.5 text-sm font-medium rounded-lg hover:bg-slate-700"><svg class="w-5 h-5 mr-3"><use href="#icon-history"></use></svg>Historique</a>
             <a href="#parametrage" class="nav-link flex items-center px-4 py-2.5 text-sm font-medium rounded-lg hover:bg-slate-700"><svg class="w-5 h-5 mr-3"><use href="#icon-settings"></use></svg>Paramétrage</a>
         </nav>
-        <div id="user-info" class="p-4 border-t border-slate-700 text-xs text-slate-400 break-words">
-            <span class="font-semibold">ID Utilisateur:</span>
-            <span id="user-id-display">Chargement...</span>
-        </div>
     </aside>
 
-    <!-- Main Content -->
     <div class="flex-1 flex flex-col">
         <main class="flex-1 overflow-y-auto">
-            <!-- Accueil Page -->
             <div id="accueil" class="page active p-6 lg:p-8">
                 <div class="max-w-7xl mx-auto">
                     <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
                         <div><h1 class="text-3xl font-bold text-slate-800">Journal de Caisse</h1><p id="report-date-display" class="mt-2 text-slate-600 font-medium"></p></div>
+                        <div><span class="text-sm text-slate-500 mt-2 sm:mt-0 block">Utilisateur par défaut</span></div>
                     </header>
-                    <section id="soldes-actuels" class="mb-8"><h2 class="text-xl font-semibold text-slate-700 mb-4">Soldes Actuels</h2><div id="account-cards-container" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div></section>
+                    <section id="soldes-actuels" class="mb-8"><h2 class="text-xl font-semibold text-slate-700 mb-4">Soldes Initiaux </h2><div id="account-cards-container" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div></section>
                     <section id="saisie-journaliere" class="mb-8"><div class="bg-white p-6 rounded-xl shadow-md border"><h2 class="text-xl font-semibold text-slate-700 mb-1">Saisie Journalière</h2><form id="transaction-form" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end mt-6"><div class="md:col-span-2 lg:col-span-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"><div><label for="num-piece" class="block text-sm font-medium text-slate-600 mb-1">N° Pièce</label><input type="text" id="num-piece" class="w-full px-3 py-2 border border-slate-300 rounded-lg shadow-sm"></div><div class="lg:col-span-2"><label for="libelle" class="block text-sm font-medium text-slate-600 mb-1">Libellé</label><input type="text" id="libelle" class="w-full px-3 py-2 border border-slate-300 rounded-lg shadow-sm" required></div><div><label for="categorie" class="block text-sm font-medium text-slate-600 mb-1">Catégorie</label><select id="categorie" class="w-full px-3 py-2 border border-slate-300 bg-white rounded-lg shadow-sm"></select></div></div><div><label for="moyen-paiement" class="block text-sm font-medium text-slate-600 mb-1">Compte</label><select id="moyen-paiement" class="w-full px-3 py-2 border border-slate-300 bg-white rounded-lg shadow-sm"></select></div><div><label for="montant-entree" class="block text-sm font-medium text-slate-600 mb-1">Entrée</label><input type="number" id="montant-entree" placeholder="0" class="w-full px-3 py-2 border border-slate-300 rounded-lg shadow-sm"></div><div><label for="montant-sortie" class="block text-sm font-medium text-slate-600 mb-1">Sortie</label><input type="number" id="montant-sortie" placeholder="0" class="w-full px-3 py-2 border border-slate-300 rounded-lg shadow-sm"></div><div class="lg:col-span-2"><button type="submit" class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 shadow-sm">Ajouter l'opération</button></div></form></div></section>
                     <section id="rapport-journalier"><h2 class="text-xl font-semibold text-slate-700 mb-4">Rapport Journalier</h2><div class="bg-white rounded-xl shadow-md border overflow-hidden"><div id="print-content" class="overflow-x-auto"><table class="w-full text-sm text-left text-slate-600"><thead id="report-header" class="text-xs text-slate-700 uppercase bg-slate-100"></thead><tbody id="transactions-body"></tbody><tfoot id="report-footer" class="font-bold bg-slate-100"></tfoot></table></div></div><div class="mt-6 flex flex-wrap gap-4"><button id="prev-day-btn" class="bg-slate-500 text-white font-bold py-2 px-5 rounded-full hover:bg-slate-600 shadow-sm">Jour Précédent</button><button id="next-day-btn" class="bg-slate-500 text-white font-bold py-2 px-5 rounded-full hover:bg-slate-600 shadow-sm">Jour Suivant</button><button id="save-btn" class="bg-blue-600 text-white font-bold py-2 px-5 rounded-full hover:bg-blue-700 shadow-sm">Clôturer et Sauvegarder</button><button id="print-btn" class="bg-green-600 text-white font-bold py-2 px-5 rounded-full hover:bg-green-700 shadow-sm">Imprimer le rapport</button></div></section>
                 </div>
             </div>
-            <!-- Other Pages (Synthèse, Historique, Paramétrage) -->
-            <div id="synthese" class="page p-6 lg:p-8"><div class="max-w-7xl mx-auto"><h1 class="text-3xl font-bold text-slate-800 mb-8">Synthèse du Jour</h1><div class="space-y-8"><div class="bg-white p-6 rounded-xl shadow-md border"><h2 class="text-xl font-semibold text-slate-700 mb-4">Récapitulatif des Comptes</h2><div id="summary-recap-table" class="overflow-x-auto"></div></div><div class="grid grid-cols-1 lg:grid-cols-2 gap-8"><div class="bg-white p-6 rounded-xl shadow-md border"><h2 class="text-xl font-semibold text-slate-700 mb-4">Résumé par Catégorie</h2><div id="summary-by-category"></div></div><div class="bg-white p-6 rounded-xl shadow-md border flex flex-col items-center justify-center"><h2 class="text-xl font-semibold text-slate-700 mb-4">Entrées vs Sorties</h2><div class="w-full max-w-xs"><canvas id="summary-chart"></canvas></div></div></div></div></div>
+            <div id="synthese" class="page p-6 lg:p-8"><div class="max-w-7xl mx-auto"><h1 class="text-3xl font-bold text-slate-800 mb-8">Synthèse du Jour</h1><div class="space-y-8"><div class="bg-white p-6 rounded-xl shadow-md border"><h2 class="text-xl font-semibold text-slate-700 mb-4">Récapitulatif des Comptes</h2><div id="summary-recap-table" class="overflow-x-auto"></div></div><div class="grid grid-cols-1 lg:grid-cols-2 gap-8"><div class="bg-white p-6 rounded-xl shadow-md border"><h2 class="text-xl font-semibold text-slate-700 mb-4">Résumé par Catégorie</h2><div id="summary-by-category"></div></div><div class="bg-white p-6 rounded-xl shadow-md border flex flex-col items-center justify-center"><h2 class="text-xl font-semibold text-slate-700 mb-4">Entrées vs Sorties</h2><div class="w-full max-w-xs"><canvas id="summary-chart"></canvas></div></div></div></div></div></div>
             <div id="historique" class="page p-6 lg:p-8"><div class="max-w-7xl mx-auto"><h1 class="text-3xl font-bold text-slate-800 mb-8">Historique des Journaux</h1><div class="bg-white p-6 rounded-xl shadow-md border"><div class="flex gap-4 mb-6 items-center"><input type="date" id="history-filter-date" class="px-3 py-2 border border-slate-300 rounded-lg shadow-sm"><button id="filter-history-btn" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 shadow-sm">Rechercher</button><button id="clear-filter-btn" class="bg-slate-200 text-slate-700 font-bold py-2 px-4 rounded-lg hover:bg-slate-300 shadow-sm">Afficher tout</button></div><ul id="history-list" class="space-y-2"></ul></div></div></div>
-            <div id="parametrage" class="page p-6 lg:p-8"><div class="max-w-4xl mx-auto"><h1 class="text-3xl font-bold text-slate-800 mb-8">Paramétrage</h1><div class="space-y-8"><div><div class="bg-white p-6 rounded-xl shadow-md border"><h2 class="text-xl font-semibold text-slate-700 mb-4">Gérer les Comptes</h2><div class="flex gap-4 mb-6"><input type="text" id="new-account-input" placeholder="Nom du nouveau compte" class="flex-grow px-3 py-2 border border-slate-300 rounded-lg shadow-sm"><button id="add-account-btn" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 shadow-sm">Ajouter</button></div><ul id="account-list" class="space-y-2"></ul></div></div><div><div class="bg-white p-6 rounded-xl shadow-md border"><h2 class="text-xl font-semibold text-slate-700 mb-4">Gérer les Catégories</h2><div class="flex gap-4 mb-6"><input type="text" id="new-category-input" placeholder="Nouvelle catégorie" class="flex-grow px-3 py-2 border border-slate-300 rounded-lg shadow-sm"><button id="add-category-btn" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 shadow-sm">Ajouter</button></div><ul id="category-list" class="space-y-2"></ul></div></div><div><div class="bg-white p-6 rounded-xl shadow-md border"><h2 class="text-xl font-semibold text-slate-700 mb-4">Gérer les Soldes Initiaux</h2><p class="text-sm text-slate-500 mb-4">Modifiez ici les soldes de départ pour la date de travail actuelle. Ces soldes ne s'appliquent qu'au jour sélectionné.</p><form id="initial-balances-form" class="space-y-4"></form><button id="save-balances-btn" class="mt-6 w-full bg-slate-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-slate-700 shadow-sm">Sauvegarder les soldes pour ce jour</button></div></div><div><div class="bg-white p-6 rounded-xl shadow-md border"><h2 class="text-xl font-semibold text-slate-700 mb-4">Date de Travail</h2><p class="text-sm text-slate-500 mb-4">Changez la date pour consulter ou modifier un journal antérieur.</p><div class="flex gap-4 items-center"><input type="date" id="work-date-input" class="px-3 py-2 border border-slate-300 rounded-lg shadow-sm"><button id="change-date-btn" class="bg-slate-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-slate-700 shadow-sm">Charger la date</button></div></div></div></div></div></div>
+            <div id="parametrage" class="page p-6 lg:p-8"><div class="max-w-4xl mx-auto"><h1 class="text-3xl font-bold text-slate-800 mb-8">Paramétrage</h1><div class="space-y-8"><div><div class="bg-white p-6 rounded-xl shadow-md border"><h2 class="text-xl font-semibold text-slate-700 mb-4">Gérer les Comptes</h2><div class="flex gap-4 mb-6"><input type="text" id="new-account-input" placeholder="Nom du nouveau compte" class="flex-grow px-3 py-2 border border-slate-300 rounded-lg shadow-sm"><button id="add-account-btn" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 shadow-sm">Ajouter</button></div><ul id="account-list" class="space-y-2"></ul></div></div><div><div class="bg-white p-6 rounded-xl shadow-md border"><h2 class="text-xl font-semibold text-slate-700 mb-4">Gérer les Catégories</h2><div class="flex gap-4 mb-6"><input type="text" id="new-category-input" placeholder="Nouvelle catégorie" class="flex-grow px-3 py-2 border border-slate-300 rounded-lg shadow-sm"><button id="add-category-btn" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 shadow-sm">Ajouter</button></div><ul id="category-list" class="space-y-2"></ul></div></div><div><div class="bg-white p-6 rounded-xl shadow-md border"><h2 class="text-xl font-semibold text-slate-700 mb-4">Gérer les Soldes Initiaux</h2><form id="initial-balances-form" class="space-y-4"></form><button id="save-balances-btn" class="mt-4 w-full bg-slate-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-slate-700 shadow-sm">Sauvegarder les soldes</button></div></div><div><div class="bg-white p-6 rounded-xl shadow-md border"><h2 class="text-xl font-semibold text-slate-700 mb-4">Date de Travail</h2><p class="text-sm text-slate-500 mb-4">Changez la date pour consulter ou modifier un journal antérieur.</p><div class="flex gap-4 items-center"><input type="date" id="work-date-input" class="px-3 py-2 border border-slate-300 rounded-lg shadow-sm"><button id="change-date-btn" class="bg-slate-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-slate-700 shadow-sm">Charger la date</button></div></div></div></div></div></div>
+            
+            <div id="edit-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden opacity-0"><div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg transform scale-95" id="edit-modal-content"><h2 class="text-xl font-bold text-slate-800 mb-4">Modifier l'opération</h2><form id="edit-form"><input type="hidden" id="edit-id"><div class="space-y-4"><div><label for="edit-num-piece" class="block text-sm font-medium text-slate-600 mb-1">N° Pièce</label><input type="text" id="edit-num-piece" class="w-full px-3 py-2 border border-slate-300 rounded-lg shadow-sm"></div><div><label for="edit-libelle" class="block text-sm font-medium text-slate-600 mb-1">Libellé</label><input type="text" id="edit-libelle" class="w-full px-3 py-2 border border-slate-300 rounded-lg shadow-sm" required></div><div><label for="edit-categorie" class="block text-sm font-medium text-slate-600 mb-1">Catégorie</label><select id="edit-categorie" class="w-full px-3 py-2 border border-slate-300 bg-white rounded-lg shadow-sm"></select></div><div><label for="edit-montant" class="block text-sm font-medium text-slate-600 mb-1">Montant</label><input type="number" id="edit-montant" class="w-full px-3 py-2 border border-slate-300 rounded-lg shadow-sm" required></div></div><div class="mt-6 flex justify-end space-x-3"><button type="button" id="cancel-edit-btn" class="bg-slate-100 text-slate-700 font-bold py-2 px-4 rounded-lg hover:bg-slate-200">Annuler</button><button type="submit" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Sauvegarder</button></div></form></div></div>
         </main>
         <footer class="text-center p-4 text-sm text-slate-500 border-t border-slate-200 bg-slate-100">
             © 2025 SudContractors. Tous droits réservés.
         </footer>
     </div>
 
-    <!-- Modals -->
-    <div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"><div class="text-white text-xl font-bold p-8">Chargement...</div></div>
-    
-    <!-- Edit Transaction Modal -->
-    <div id="edit-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden opacity-0 z-40"><div class="modal-content bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg transform scale-95" id="edit-modal-content"><h2 class="text-xl font-bold text-slate-800 mb-4">Modifier l'opération</h2><form id="edit-form"><input type="hidden" id="edit-id"><div class="space-y-4"><div><label for="edit-num-piece" class="block text-sm font-medium text-slate-600 mb-1">N° Pièce</label><input type="text" id="edit-num-piece" class="w-full px-3 py-2 border border-slate-300 rounded-lg shadow-sm"></div><div><label for="edit-libelle" class="block text-sm font-medium text-slate-600 mb-1">Libellé</label><input type="text" id="edit-libelle" class="w-full px-3 py-2 border border-slate-300 rounded-lg shadow-sm" required></div><div><label for="edit-categorie" class="block text-sm font-medium text-slate-600 mb-1">Catégorie</label><select id="edit-categorie" class="w-full px-3 py-2 border border-slate-300 bg-white rounded-lg shadow-sm"></select></div><div><label for="edit-montant" class="block text-sm font-medium text-slate-600 mb-1">Montant</label><input type="number" id="edit-montant" class="w-full px-3 py-2 border border-slate-300 rounded-lg shadow-sm" required></div></div><div class="mt-6 flex justify-end space-x-3"><button type="button" id="cancel-edit-btn" class="bg-slate-100 text-slate-700 font-bold py-2 px-4 rounded-lg hover:bg-slate-200">Annuler</button><button type="submit" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Sauvegarder</button></div></form></div></div>
-
-    <!-- Edit Initial Balance Modal -->
-    <div id="balance-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden opacity-0 z-40"><div class="modal-content bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm transform scale-95"><h2 class="text-xl font-bold text-slate-800 mb-4">Modifier Solde Initial</h2><form id="balance-form"><input type="hidden" id="balance-account-name"><div class="space-y-4"><div><label for="balance-amount" id="balance-label" class="block text-sm font-medium text-slate-600 mb-1">Nouveau Solde</label><input type="number" id="balance-amount" class="w-full px-3 py-2 border border-slate-300 rounded-lg shadow-sm" required></div></div><div class="mt-6 flex justify-end space-x-3"><button type="button" id="cancel-balance-btn" class="bg-slate-100 text-slate-700 font-bold py-2 px-4 rounded-lg hover:bg-slate-200">Annuler</button><button type="submit" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Sauvegarder</button></div></form></div></div>
-
-    <!-- Confirmation Modal -->
-    <div id="confirm-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden opacity-0 z-40"><div class="modal-content bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm transform scale-95"><h2 class="text-xl font-bold text-slate-800 mb-2">Confirmation</h2><p id="confirm-message" class="text-slate-600 mb-6">Êtes-vous sûr ?</p><div class="flex justify-end space-x-3"><button id="cancel-confirm-btn" class="bg-slate-100 text-slate-700 font-bold py-2 px-4 rounded-lg hover:bg-slate-200">Annuler</button><button id="confirm-btn" class="bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Confirmer</button></div></div></div>
-
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-    
-    <!-- Firebase SDK -->
-    <script type="module">
-        // Firebase Imports
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const UIElements = {
+            mainNav: document.getElementById('main-nav'), pages: document.querySelectorAll('.page'), dateDisplay: document.getElementById('report-date-display'),
+            accueil: { form: document.getElementById('transaction-form'), body: document.getElementById('transactions-body'), header: document.getElementById('report-header'), footer: document.getElementById('report-footer'), categorieSelect: document.getElementById('categorie'), compteSelect: document.getElementById('moyen-paiement'), cardsContainer: document.getElementById('account-cards-container'), printContent: document.getElementById('print-content') },
+            synthese: { category: document.getElementById('summary-by-category'), chartCanvas: document.getElementById('summary-chart'), recapTable: document.getElementById('summary-recap-table') },
+            historique: { list: document.getElementById('history-list'), filterDateInput: document.getElementById('history-filter-date'), filterBtn: document.getElementById('filter-history-btn'), clearFilterBtn: document.getElementById('clear-filter-btn') },
+            parametrage: { newCatInput: document.getElementById('new-category-input'), addCatBtn: document.getElementById('add-category-btn'), catList: document.getElementById('category-list'), newAccInput: document.getElementById('new-account-input'), addAccBtn: document.getElementById('add-account-btn'), accList: document.getElementById('account-list'), workDateInput: document.getElementById('work-date-input'), changeDateBtn: document.getElementById('change-date-btn'), initialBalancesForm: document.getElementById('initial-balances-form'), saveBalancesBtn: document.getElementById('save-balances-btn') },
+            modal: { container: document.getElementById('edit-modal'), content: document.getElementById('edit-modal-content'), form: document.getElementById('edit-form'), cancelBtn: document.getElementById('cancel-edit-btn'), id: document.getElementById('edit-id'), numPiece: document.getElementById('edit-num-piece'), libelle: document.getElementById('edit-libelle'), categorie: document.getElementById('edit-categorie'), montant: document.getElementById('edit-montant') },
+            buttons: { save: document.getElementById('save-btn'), print: document.getElementById('print-btn'), prevDay: document.getElementById('prev-day-btn'), nextDay: document.getElementById('next-day-btn') },
+        };
+        let summaryChart = null;
+        let state = { transactions: [], soldesInitiaux: {}, transactionIdCounter: 0, categories: [], accounts: [], workingDate: getToday() };
+        function getToday() { return new Date().toISOString().split('T')[0]; }
+        const getInitialState = () => ({ transactions: [], soldes: state.accounts.reduce((acc, a) => ({ ...acc, [a]: 0 }), {}), transactionIdCounter: 0 });
+        const formatCurrency = (v) => new Intl.NumberFormat('fr-FR').format(parseFloat(v) || 0);
+        const showToast = (m, t = 's') => Toastify({ text: m, duration: 3000, gravity: "bottom", position: "right", style: { background: t === 's' ? "#10B981" : "#EF4444" } }).showToast();
 
-        document.addEventListener('DOMContentLoaded', () => {
-            // --- GLOBAL CONFIG AND STATE ---
-            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-            const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-            
-            let app, auth, db;
-            let summaryChart = null;
-            let unsubscribeJournalListener = null;
-            let unsubscribeSettingsListener = null;
-
-            let state = {
-                userId: null,
-                isAuthReady: false,
-                transactions: [],
-                soldesInitiaux: {},
-                transactionIdCounter: 0,
-                categories: [],
-                accounts: [],
-                workingDate: getToday(),
-            };
-
-            const UIElements = {
-                mainNav: document.getElementById('main-nav'), pages: document.querySelectorAll('.page'), dateDisplay: document.getElementById('report-date-display'),
-                accueil: { form: document.getElementById('transaction-form'), body: document.getElementById('transactions-body'), header: document.getElementById('report-header'), footer: document.getElementById('report-footer'), categorieSelect: document.getElementById('categorie'), compteSelect: document.getElementById('moyen-paiement'), cardsContainer: document.getElementById('account-cards-container'), printContent: document.getElementById('print-content') },
-                synthese: { category: document.getElementById('summary-by-category'), chartCanvas: document.getElementById('summary-chart'), recapTable: document.getElementById('summary-recap-table') },
-                historique: { list: document.getElementById('history-list'), filterDateInput: document.getElementById('history-filter-date'), filterBtn: document.getElementById('filter-history-btn'), clearFilterBtn: document.getElementById('clear-filter-btn') },
-                parametrage: { newCatInput: document.getElementById('new-category-input'), addCatBtn: document.getElementById('add-category-btn'), catList: document.getElementById('category-list'), newAccInput: document.getElementById('new-account-input'), addAccBtn: document.getElementById('add-account-btn'), accList: document.getElementById('account-list'), workDateInput: document.getElementById('work-date-input'), changeDateBtn: document.getElementById('change-date-btn'), initialBalancesForm: document.getElementById('initial-balances-form'), saveBalancesBtn: document.getElementById('save-balances-btn') },
-                modals: {
-                    edit: { container: document.getElementById('edit-modal'), content: document.getElementById('edit-modal-content'), form: document.getElementById('edit-form'), cancelBtn: document.getElementById('cancel-edit-btn'), id: document.getElementById('edit-id'), numPiece: document.getElementById('edit-num-piece'), libelle: document.getElementById('edit-libelle'), categorie: document.getElementById('edit-categorie'), montant: document.getElementById('edit-montant') },
-                    confirm: { container: document.getElementById('confirm-modal'), content: document.getElementById('confirm-modal').querySelector('.modal-content'), message: document.getElementById('confirm-message'), confirmBtn: document.getElementById('confirm-btn'), cancelBtn: document.getElementById('cancel-confirm-btn') },
-                    balance: { container: document.getElementById('balance-modal'), content: document.getElementById('balance-modal').querySelector('.modal-content'), form: document.getElementById('balance-form'), cancelBtn: document.getElementById('cancel-balance-btn'), accountName: document.getElementById('balance-account-name'), amount: document.getElementById('balance-amount'), label: document.getElementById('balance-label') }
-                },
-                buttons: { save: document.getElementById('save-btn'), print: document.getElementById('print-btn'), prevDay: document.getElementById('prev-day-btn'), nextDay: document.getElementById('next-day-btn') },
-                loadingOverlay: document.getElementById('loading-overlay'),
-                userIdDisplay: document.getElementById('user-id-display'),
-            };
-
-            // --- UTILITY FUNCTIONS ---
-            function getToday() { return new Date().toISOString().split('T')[0]; }
-            const formatCurrency = (v) => new Intl.NumberFormat('fr-FR').format(parseFloat(v) || 0);
-            const showToast = (m, t = 's') => Toastify({ text: m, duration: 3000, gravity: "bottom", position: "right", style: { background: t === 's' ? "#10B981" : "#EF4444" } }).showToast();
-            const setLoading = (isLoading) => { UIElements.loadingOverlay.style.display = isLoading ? 'flex' : 'none'; };
-
-            // --- MODAL MANAGER ---
-            const modalManager = {
-                open(modal) {
-                    modal.container.classList.remove('hidden');
-                    setTimeout(() => {
-                        modal.container.classList.remove('opacity-0');
-                        modal.content.classList.remove('scale-95');
-                    }, 10);
-                },
-                close(modal) {
-                    modal.container.classList.add('opacity-0');
-                    modal.content.classList.add('scale-95');
-                    setTimeout(() => modal.container.classList.add('hidden'), 300);
-                },
-                showConfirm(message, onConfirm) {
-                    UIElements.modals.confirm.message.textContent = message;
-                    this.open(UIElements.modals.confirm);
-                    
-                    const confirmHandler = () => {
-                        onConfirm();
-                        this.close(UIElements.modals.confirm);
-                        cleanup();
-                    };
-
-                    const cancelHandler = () => {
-                        this.close(UIElements.modals.confirm);
-                        cleanup();
-                    };
-
-                    const cleanup = () => {
-                        UIElements.modals.confirm.confirmBtn.removeEventListener('click', confirmHandler);
-                        UIElements.modals.confirm.cancelBtn.removeEventListener('click', cancelHandler);
-                    };
-
-                    UIElements.modals.confirm.confirmBtn.addEventListener('click', confirmHandler);
-                    UIElements.modals.confirm.cancelBtn.addEventListener('click', cancelHandler);
-                }
-            };
-            
-            // --- FIRESTORE DATA HANDLING ---
-            const firestoreManager = {
-                async saveJournal(date, journalData) {
-                    if (!state.userId) return;
-                    const journalRef = doc(db, `artifacts/${appId}/users/${state.userId}/journals`, date);
-                    try {
-                        await setDoc(journalRef, journalData, { merge: true });
-                        showToast(`Journal du ${date} sauvegardé !`);
-                    } catch (error) {
-                        console.error("Error saving journal: ", error);
-                        showToast("Erreur de sauvegarde.", "e");
-                    }
-                },
-                
-                loadJournal(date) {
-                    if (unsubscribeJournalListener) unsubscribeJournalListener();
-                    if (!state.userId) return;
-
-                    // Before switching, calculate the final balances of the current day
-                    const finalBalancesOfPreviousDay = state.accounts.reduce((acc, accountName) => {
-                        const txs = state.transactions.filter(t => t.compte === accountName);
-                        const entrees = txs.filter(t => t.type === 'entree').reduce((s, t) => s + t.montant, 0);
-                        const sorties = txs.filter(t => t.type === 'sortie').reduce((s, t) => s + t.montant, 0);
-                        acc[accountName] = (state.soldesInitiaux[accountName] || 0) + entrees - sorties;
-                        return acc;
-                    }, {});
-
-                    const journalRef = doc(db, `artifacts/${appId}/users/${state.userId}/journals`, date);
-                    
-                    unsubscribeJournalListener = onSnapshot(journalRef, (docSnap) => {
-                        state.workingDate = date;
-
-                        if (docSnap.exists()) {
-                            // This is an existing journal, load its data
-                            const data = docSnap.data();
-                            state.transactions = data.transactions || [];
-                            state.soldesInitiaux = data.soldesInitiaux || {};
-                            state.transactionIdCounter = data.transactionIdCounter || 0;
-                        } else {
-                            // This is a new day, carry over the final balances from the previous day
-                            state.transactions = [];
-                            state.transactionIdCounter = 0;
-                            state.soldesInitiaux = finalBalancesOfPreviousDay;
-                            // Automatically save this new day's journal with the carried-over balances
-                            this.saveJournal(date, {
-                                transactions: state.transactions,
-                                soldesInitiaux: state.soldesInitiaux,
-                                transactionIdCounter: state.transactionIdCounter
-                            });
+        const storage = {
+            keys: { journal: (d) => `jc-journal-${d}`, cats: 'jc-cats', accs: 'jc-accs' },
+            saveJournal(d) { localStorage.setItem(this.keys.journal(d), JSON.stringify({ txs: state.transactions, soldes: state.soldesInitiaux, id: state.transactionIdCounter })); showToast(`Journal du ${d} sauvegardé !`); },
+            loadJournal(d) {
+                const data = localStorage.getItem(this.keys.journal(d));
+                const savedJournal = data ? JSON.parse(data) : getInitialState();
+                state.workingDate = d;
+                state.soldesInitiaux = getInitialState().soldes;
+                state.transactions = savedJournal.txs || [];
+                state.transactionIdCounter = savedJournal.id || 0;
+                if (savedJournal.soldes) {
+                    for (const acc in savedJournal.soldes) {
+                        if (state.soldesInitiaux.hasOwnProperty(acc)) {
+                            state.soldesInitiaux[acc] = savedJournal.soldes[acc];
                         }
-                        
-                        UIElements.dateDisplay.textContent = new Date(date + 'T00:00:00').toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-                        UIElements.parametrage.workDateInput.value = date;
-                        
-                        renderAll();
-                    }, (error) => {
-                        console.error("Error loading journal:", error);
-                        showToast("Erreur de chargement du journal.", "e");
-                    });
-                },
-
-                async saveSettings() {
-                    if (!state.userId) return;
-                    const settingsRef = doc(db, `artifacts/${appId}/users/${state.userId}/settings/main`);
-                    try {
-                        await setDoc(settingsRef, {
-                            accounts: state.accounts,
-                            categories: state.categories
-                        });
-                    } catch (error) {
-                        console.error("Error saving settings: ", error);
                     }
-                },
-                
-                loadSettings() {
-                    if (unsubscribeSettingsListener) unsubscribeSettingsListener();
-                    if (!state.userId) return;
-                    
-                    const settingsRef = doc(db, `artifacts/${appId}/users/${state.userId}/settings/main`);
-                    
-                    unsubscribeSettingsListener = onSnapshot(settingsRef, (docSnap) => {
-                         if (docSnap.exists()) {
-                            const data = docSnap.data();
-                            state.accounts = data.accounts || ["Caisse", "Wave", "Orange Money"];
-                            state.categories = data.categories || ["Achat", "Règlement clients", "Dépenses diverses"];
-                        } else {
-                            // First time user, set defaults
-                            state.accounts = ["Caisse", "Wave", "Orange Money"];
-                            state.categories = ["Achat", "Règlement clients", "Dépenses diverses"];
-                            this.saveSettings(); // Save defaults for new user
-                        }
-                        // Once settings are loaded, load today's journal
-                        this.loadJournal(state.workingDate);
-                        setLoading(false);
-                    }, (error) => {
-                        console.error("Error loading settings:", error);
-                        showToast("Erreur de chargement des paramètres.", "e");
-                        setLoading(false);
-                    });
                 }
-            };
-            
-            // --- RENDER FUNCTIONS ---
-            const renderAll = () => {
-                renderAccountCards();
-                renderReportTable();
-                categoryManager.populateDropdowns();
-                accountManager.populateDropdowns();
-                renderInitialBalancesForm();
-            };
-
-            const renderInitialBalancesForm = () => {
-                UIElements.parametrage.initialBalancesForm.innerHTML = state.accounts.map(acc => `
-                    <div>
-                        <label for="balance-${acc}" class="block text-sm font-medium text-slate-600 mb-1">${acc}</label>
-                        <input type="number" id="balance-${acc}" name="${acc}" value="${state.soldesInitiaux[acc] || 0}" class="w-full px-3 py-2 border border-slate-300 rounded-lg shadow-sm">
-                    </div>
-                `).join('');
-            };
-
-            const renderAccountCards = () => {
-                UIElements.accueil.cardsContainer.innerHTML = state.accounts.map(acc => `<div id="card-${acc}" data-name="${acc}" class="bg-white p-6 rounded-xl shadow-md border transition-all cursor-pointer"><h3 class="text-sm font-medium text-slate-500">${acc}</h3><p id="solde-${acc}-card" class="text-3xl font-bold mt-2">0</p></div>`).join('');
-                state.accounts.forEach(acc => document.getElementById(`card-${acc}`).addEventListener('click', () => editInitialBalance(acc)));
-                updateTotals();
-            };
-            
-            const renderReportTable = () => {
-                UIElements.accueil.header.innerHTML = `<tr><th class="px-4 py-3" rowspan="2">N° PIÈCE</th><th class="px-4 py-3" rowspan="2">Libellé</th><th class="px-4 py-3" rowspan="2">Catégorie</th>${state.accounts.map(acc => `<th class="px-4 py-3 text-center border-l" colspan="2">${acc}</th>`).join('')}<th rowspan="2"></th></tr><tr>${state.accounts.map(() => `<th class="px-4 py-3 text-center border-l text-green-600">Entrées</th><th class="px-4 py-3 text-center text-red-600">Sorties</th>`).join('')}</tr>`;
-                UIElements.accueil.body.innerHTML = `<tr class="bg-slate-50 font-semibold"><td class="px-4 py-2" colspan="3">Solde initial</td>${state.accounts.map(acc => `<td class="px-4 py-2 text-center text-slate-500" colspan="2">${formatCurrency(state.soldesInitiaux[acc] || 0)}</td>`).join('')}<td></td></tr>`;
-                
-                state.transactions.forEach(tx => {
-                    const row = UIElements.accueil.body.insertRow(-1);
-                    row.className = 'bg-white border-b border-slate-200 hover:bg-slate-50 new-row';
-                    let cells = `<td class="px-4 py-2">${tx.numPiece}</td><td class="px-4 py-2">${tx.libelle}</td><td class="px-4 py-2 text-xs text-slate-500">${tx.categorie}</td>`;
-                    state.accounts.forEach(acc => {
-                        if (acc === tx.compte) {
-                            cells += tx.type === 'entree' ? `<td class="px-4 py-2 text-center text-green-600">${formatCurrency(tx.montant)}</td><td class="px-4 py-2 text-center"></td>` : `<td class="px-4 py-2 text-center"></td><td class="px-4 py-2 text-center text-red-600">${formatCurrency(tx.montant)}</td>`;
-                        } else { cells += `<td class="px-4 py-2"></td><td class="px-4 py-2"></td>`; }
-                    });
-                    cells += `<td class="px-2 py-2 text-center"><button class="edit-btn text-blue-500 p-1" data-id="${tx.id}">✏️</button><button class="delete-btn text-red-500 p-1 font-bold" data-id="${tx.id}">&times;</button></td>`;
-                    row.innerHTML = cells;
-                });
-                UIElements.accueil.footer.innerHTML = `<tr class="border-t-2 border-slate-300"><td class="px-4 py-3" colspan="3">TOTAL OPÉRATIONS</td>${state.accounts.map(acc => { const txs = state.transactions.filter(t => t.compte === acc); const e = txs.filter(t => t.type === 'entree').reduce((s, t) => s + t.montant, 0); const s = txs.filter(t => t.type === 'sortie').reduce((s, t) => s + t.montant, 0); return `<td class="px-4 py-3 text-center text-green-600">${formatCurrency(e)}</td><td class="px-4 py-3 text-center text-red-600">${formatCurrency(s)}</td>`; }).join('')}<td></td></tr>`;
-                updateTotals();
-            };
-
-            const updateTotals = () => {
-                state.accounts.forEach(acc => {
-                    const txs = state.transactions.filter(t => t.compte === acc);
-                    const entrees = txs.filter(t => t.type === 'entree').reduce((s, t) => s + t.montant, 0);
-                    const sorties = txs.filter(t => t.type === 'sortie').reduce((s, t) => s + t.montant, 0);
-                    const soldeFinal = (state.soldesInitiaux[acc] || 0) + entrees - sorties;
-                    const card = document.getElementById(`card-${acc}`);
-                    const cardText = document.getElementById(`solde-${acc}-card`);
-                    if(card && cardText){
-                        cardText.textContent = formatCurrency(soldeFinal);
-                        card.className = 'bg-white p-6 rounded-xl shadow-md border transition-all cursor-pointer';
-                        cardText.className = 'text-3xl font-bold mt-2';
-                        if (soldeFinal > 0) { card.classList.add('bg-green-50', 'border-green-300'); cardText.classList.add('text-green-800'); }
-                        else if (soldeFinal < 0) { card.classList.add('bg-red-50', 'border-red-300'); cardText.classList.add('text-red-800'); }
-                        else { card.classList.add('bg-slate-50', 'border-slate-300'); cardText.classList.add('text-slate-800'); }
-                    }
-                });
-            };
-
-            // --- BUSINESS LOGIC & EVENT HANDLERS ---
-            
-            const saveCurrentJournal = () => {
-                const journalData = {
-                    transactions: state.transactions,
-                    soldesInitiaux: state.soldesInitiaux,
-                    transactionIdCounter: state.transactionIdCounter
-                };
-                firestoreManager.saveJournal(state.workingDate, journalData);
-            };
-
-            const addTransaction = (data) => {
-                if (!data.libelle || (data.entree <= 0 && data.sortie <= 0) || (data.entree > 0 && data.sortie > 0)) {
-                    showToast("Saisir un libellé et un seul montant.", 'e');
-                    return;
-                }
-                state.transactionIdCounter++;
-                state.transactions.push({
-                    id: state.transactionIdCounter,
-                    numPiece: data.numPiece,
-                    libelle: data.libelle,
-                    categorie: data.categorie,
-                    compte: data.compte,
-                    type: data.entree > 0 ? 'entree' : 'sortie',
-                    montant: data.entree > 0 ? data.entree : data.sortie
-                });
+                UIElements.dateDisplay.textContent = new Date(d).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                UIElements.parametrage.workDateInput.value = d;
                 renderAll();
-                UIElements.accueil.form.reset();
-            };
-            
-            const deleteTransaction = (id) => {
-                state.transactions = state.transactions.filter(tx => tx.id !== id);
-                renderAll();
-                showToast("Opération supprimée.", "e");
-            };
+            },
+            saveCats() { localStorage.setItem(this.keys.cats, JSON.stringify(state.categories)); },
+            loadCats() { state.categories = JSON.parse(localStorage.getItem(this.keys.cats)) || ["Achat", "Règlement clients", "Dépenses diverses"]; },
+            saveAccs() { localStorage.setItem(this.keys.accs, JSON.stringify(state.accounts)); },
+            loadAccs() { state.accounts = JSON.parse(localStorage.getItem(this.keys.accs)) || ["Caisse", "Wave", "Orange Money"]; }
+        };
+// ANKAR//
+        const manager = (type, ui, stateKey) => ({
+            init() { ui.addBtn.addEventListener('click', () => this.add()); ui.list.addEventListener('click', (e) => { if (e.target.classList.contains(`delete-${type}-btn`)) this.remove(e.target.dataset.name); }); },
+            add() { const name = ui.input.value.trim(); if (name && !state[stateKey].includes(name)) { state[stateKey].push(name); storage[type === 'cat' ? 'saveCats' : 'saveAccs'](); this.render(); ui.input.value = ''; showToast(`${type === 'cat' ? 'Catégorie' : 'Compte'} ajouté.`); renderAll(); } },
+            remove(name) { state[stateKey] = state[stateKey].filter(i => i !== name); storage[type === 'cat' ? 'saveCats' : 'saveAccs'](); this.render(); showToast(`${type === 'cat' ? 'Catégorie' : 'Compte'} supprimé.`, 'e'); renderAll(); },
+            render() { ui.list.innerHTML = state[stateKey].map(name => `<li class="flex justify-between items-center p-2 bg-slate-50 rounded-lg"><span>${name}</span><button data-name="${name}" class="delete-${type}-btn text-red-500 font-bold">&times;</button></li>`).join(''); this.populateDropdowns(); },
+            populateDropdowns() { if (ui.dropdowns) { const html = state[stateKey].map(name => `<option value="${name}">${name}</option>`).join(''); ui.dropdowns.forEach(dd => dd.innerHTML = html); } }
+        });
+        const categoryManager = manager('cat', { addBtn: UIElements.parametrage.addCatBtn, input: UIElements.parametrage.newCatInput, list: UIElements.parametrage.catList, dropdowns: [UIElements.accueil.categorieSelect, UIElements.modal.categorie] }, 'categories');
+        const accountManager = manager('acc', { addBtn: UIElements.parametrage.addAccBtn, input: UIElements.parametrage.newAccInput, list: UIElements.parametrage.accList, dropdowns: [UIElements.accueil.compteSelect] }, 'accounts');
 
-            const editTransaction = (id) => {
-                const tx = state.transactions.find(t => t.id === id);
-                if (!tx) return;
-                const modal = UIElements.modals.edit;
-                modal.id.value = tx.id;
-                modal.numPiece.value = tx.numPiece;
-                modal.libelle.value = tx.libelle;
-                modal.categorie.value = tx.categorie;
-                modal.montant.value = tx.montant;
-                modalManager.open(modal);
-            };
-
-            const editInitialBalance = (acc) => {
-                const modal = UIElements.modals.balance;
-                modal.accountName.value = acc;
-                modal.amount.value = state.soldesInitiaux[acc] || 0;
-                modal.label.textContent = `Nouveau solde pour ${acc}`;
-                modalManager.open(modal);
-            };
-
-            const manager = (type, ui, stateKey) => ({
-                init() { ui.addBtn.addEventListener('click', () => this.add()); ui.list.addEventListener('click', (e) => { if (e.target.classList.contains(`delete-${type}-btn`)) this.remove(e.target.dataset.name); }); },
-                add() { const name = ui.input.value.trim(); if (name && !state[stateKey].includes(name)) { state[stateKey].push(name); firestoreManager.saveSettings(); this.render(); ui.input.value = ''; showToast(`${type === 'cat' ? 'Catégorie' : 'Compte'} ajouté.`); renderAll(); } },
-                remove(name) { state[stateKey] = state[stateKey].filter(i => i !== name); firestoreManager.saveSettings(); this.render(); showToast(`${type === 'cat' ? 'Catégorie' : 'Compte'} supprimé.`, 'e'); renderAll(); },
-                render() { ui.list.innerHTML = state[stateKey].map(name => `<li class="flex justify-between items-center p-2 bg-slate-50 rounded-lg"><span>${name}</span><button data-name="${name}" class="delete-${type}-btn text-red-500 font-bold">&times;</button></li>`).join(''); this.populateDropdowns(); },
-                populateDropdowns() { if (ui.dropdowns) { const html = state[stateKey].map(name => `<option value="${name}">${name}</option>`).join(''); ui.dropdowns.forEach(dd => dd.innerHTML = html); } }
-            });
-            const categoryManager = manager('cat', { addBtn: UIElements.parametrage.addCatBtn, input: UIElements.parametrage.newCatInput, list: UIElements.parametrage.catList, dropdowns: [UIElements.accueil.categorieSelect, UIElements.modals.edit.categorie] }, 'categories');
-            const accountManager = manager('acc', { addBtn: UIElements.parametrage.addAccBtn, input: UIElements.parametrage.newAccInput, list: UIElements.parametrage.accList, dropdowns: [UIElements.accueil.compteSelect] }, 'accounts');
-
-            const navigation = {
-                init() { UIElements.mainNav.addEventListener('click', (e) => { const l = e.target.closest('a'); if (l) { e.preventDefault(); this.to(l.getAttribute('href')); } }); },
-                to(hash) { const id = hash.substring(1); UIElements.pages.forEach(p => p.classList.toggle('active', p.id === id)); UIElements.mainNav.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.getAttribute('href') === hash)); if (id === 'synthese') this.updateSynthese(); if (id === 'historique') this.updateHistorique(); if (id === 'parametrage') { categoryManager.render(); accountManager.render(); renderInitialBalancesForm(); } },
-                updateSynthese() { /* ... (same as original, no changes needed) ... */ },
-                async updateHistorique(filterDate = null) {
-                    UIElements.historique.list.innerHTML = `<li class="p-3 text-slate-500">Chargement de l'historique...</li>`;
-                    if (!state.userId) return;
-                    const historyCol = collection(db, `artifacts/${appId}/users/${state.userId}/journals`);
-                    const querySnapshot = await getDocs(historyCol);
-                    const dates = querySnapshot.docs.map(doc => doc.id).sort().reverse();
-                    
-                    UIElements.historique.list.innerHTML = '';
-                    let found = false;
-                    dates.forEach(date => {
-                        if (!filterDate || date === filterDate) {
-                            found = true;
-                            const li = document.createElement('li');
-                            li.className = 'p-3 bg-slate-50 rounded-lg hover:bg-slate-100 cursor-pointer';
-                            li.textContent = new Date(date + 'T00:00:00').toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-                            li.dataset.date = date;
-                            UIElements.historique.list.appendChild(li);
-                        }
-                    });
-                    if (!found) {
-                        UIElements.historique.list.innerHTML = `<li class="p-3 text-slate-500">Aucun rapport trouvé.</li>`;
-                    }
-                }
-            };
-            navigation.updateSynthese = function() { // Attach to navigation object
+        const navigation = {
+            init() { UIElements.mainNav.addEventListener('click', (e) => { const l = e.target.closest('a'); if (l) { e.preventDefault(); this.to(l.getAttribute('href')); } }); },
+            to(hash) { const id = hash.substring(1); UIElements.pages.forEach(p => p.classList.toggle('active', p.id === id)); UIElements.mainNav.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.getAttribute('href') === hash)); if (id === 'synthese') this.updateSynthese(); if (id === 'historique') this.updateHistorique(); if (id === 'parametrage') { categoryManager.render(); accountManager.render(); renderInitialBalancesForm(); } },
+            updateSynthese() {
                 let totalE = 0, totalS = 0;
                 state.transactions.forEach(tx => {
                     if (tx.type === 'entree') totalE += tx.montant;
@@ -466,277 +158,299 @@
                 });
                 recapHtml += '</tbody></table>';
                 UIElements.synthese.recapTable.innerHTML = recapHtml;
-            };
-            
-            const printReport = () => {
-                const date = new Date(state.workingDate + 'T00:00:00').toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-                
-                const signatureBlock = `
-                    <div style="margin-top: 4rem; padding-top: 2rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; text-align: center; font-size: 0.875rem;">
-                        <div>
-                            <p style="font-weight: bold;">SERVICE FINANCIER</p>
-                            <div style="border-top: 2px solid #cbd5e1; margin-top: 4rem;"></div>
-                        </div>
-                        <div>
-                            <p style="font-weight: bold;">DIRECTEUR DES OPERATIONS</p>
-                            <div style="border-top: 2px solid #cbd5e1; margin-top: 4rem;"></div>
-                        </div>
-                        <div>
-                            <p style="font-weight: bold;">DIRECTEUR GENERAL</p>
-                            <div style="border-top: 2px solid #cbd5e1; margin-top: 4rem;"></div>
-                        </div>
-                    </div>`;
-
-                let transactionsHtml = '<h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">Détail des Opérations</h2>';
-                transactionsHtml += '<table class="report-table">';
-                transactionsHtml += `
-                    <thead>
-                        <tr>
-                            <th rowspan="2">N° PIÈCE</th>
-                            <th rowspan="2">Libellé</th>
-                            <th rowspan="2">Catégorie</th>
-                            ${state.accounts.map(acc => `<th colspan="2" style="text-align: center;">${acc}</th>`).join('')}
-                        </tr>
-                        <tr>
-                            ${state.accounts.map(() => `<th style="text-align: center; color: #059669;">Entrées</th><th style="text-align: center; color: #dc2626;">Sorties</th>`).join('')}
-                        </tr>
-                    </thead>`;
-                transactionsHtml += '<tbody>';
-                transactionsHtml += `
-                    <tr style="font-weight: bold;">
-                        <td colspan="3">Solde initial</td>
-                        ${state.accounts.map(acc => `<td colspan="2" style="text-align: center;">${formatCurrency(state.soldesInitiaux[acc] || 0)}</td>`).join('')}
-                    </tr>`;
-                state.transactions.forEach(tx => {
-                    transactionsHtml += '<tr>';
-                    transactionsHtml += `<td>${tx.numPiece}</td><td>${tx.libelle}</td><td>${tx.categorie}</td>`;
-                    state.accounts.forEach(acc => {
-                        if (acc === tx.compte) {
-                            transactionsHtml += tx.type === 'entree' 
-                                ? `<td style="text-align: right; color: #059669;">${formatCurrency(tx.montant)}</td><td></td>` 
-                                : `<td></td><td style="text-align: right; color: #dc2626;">${formatCurrency(tx.montant)}</td>`;
-                        } else {
-                            transactionsHtml += '<td></td><td></td>';
-                        }
-                    });
-                    transactionsHtml += '</tr>';
-                });
-                transactionsHtml += '</tbody>';
-                transactionsHtml += '<tfoot style="font-weight: bold;">';
-                const totals = state.accounts.reduce((acc, account) => {
-                    const txs = state.transactions.filter(t => t.compte === account);
-                    acc[account] = {
-                        entrees: txs.filter(t => t.type === 'entree').reduce((s, t) => s + t.montant, 0),
-                        sorties: txs.filter(t => t.type === 'sortie').reduce((s, t) => s + t.montant, 0)
-                    };
-                    return acc;
-                }, {});
-                transactionsHtml += `
-                    <tr>
-                        <td colspan="3">TOTAL OPÉRATIONS</td>
-                        ${state.accounts.map(acc => `
-                            <td style="text-align: right; color: #059669;">${formatCurrency(totals[acc].entrees)}</td>
-                            <td style="text-align: right; color: #dc2626;">${formatCurrency(totals[acc].sorties)}</td>
-                        `).join('')}
-                    </tr>`;
-                transactionsHtml += `
-                    <tr>
-                        <td colspan="3">SOLDE FINAL</td>
-                        ${state.accounts.map(acc => {
-                            const finalBalance = (state.soldesInitiaux[acc] || 0) + totals[acc].entrees - totals[acc].sorties;
-                            return `<td colspan="2" style="text-align: center;">${formatCurrency(finalBalance)}</td>`;
-                        }).join('')}
-                    </tr>`;
-                transactionsHtml += '</tfoot>';
-                transactionsHtml += '</table>';
-
-                const printWindow = window.open('', '_blank');
-                printWindow.document.write(`
-                    <html>
-                        <head>
-                            <title>Rapport de Caisse - ${date}</title>
-                            <style>
-                                body { font-family: 'Inter', sans-serif; }
-                                .report-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
-                                .report-table th, .report-table td { border: 1px solid #ccc; padding: 6px; text-align: left; }
-                                .report-table th { background-color: #f2f2f2; }
-                                @page { size: landscape; margin: 1cm; }
-                            </style>
-                        </head>
-                        <body>
-                            <div style="container; margin: auto; padding: 1rem;">
-                                <p style="font-size: 0.75rem; color: #64748b; margin-bottom: 1rem;">Pour un meilleur affichage, choisissez l'orientation "Paysage" dans les options d'impression.</p>
-                                <h1 style="font-size: 1.875rem; font-weight: bold; text-align: center; margin-bottom: 1rem;">Rapport Journalier de Caisse</h1>
-                                <p style="margin-bottom: 1.5rem;"><strong>Date:</strong> ${date}</p>
-                                ${transactionsHtml}
-                                ${signatureBlock}
-                            </div>
-                        </body>
-                    </html>
-                `);
-                printWindow.document.close();
-                setTimeout(() => {
-                    printWindow.print();
-                    printWindow.close();
-                }, 250);
-            };
-
-            // --- INITIALIZATION ---
-            async function init() {
-                setLoading(true);
-
-                // Check for Firebase configuration
-                if (Object.keys(firebaseConfig).length === 0) {
-                    console.error("Firebase config is missing. The app cannot run outside its intended environment.");
-                    UIElements.loadingOverlay.innerHTML = `
-                        <div class="text-center text-white">
-                            <h2 class="text-xl font-bold mb-2">Erreur de Configuration</h2>
-                            <p>La configuration de la base de données est manquante.</p>
-                            <p class="text-sm mt-2 text-slate-300">Cette application est conçue pour fonctionner dans un environnement spécifique où les clés de connexion sont fournies automatiquement.</p>
-                        </div>
-                    `;
-                    return; // Stop initialization
+            },
+            updateHistorique(filterDate = null) {
+                UIElements.historique.list.innerHTML = '';
+                let keys = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.startsWith('jc-journal-')) {
+                        keys.push(key);
+                    }
                 }
-
-                navigation.init();
-                categoryManager.init();
-                accountManager.init();
-
-                // Initialize Firebase
-                try {
-                    app = initializeApp(firebaseConfig);
-                    auth = getAuth(app);
-                    db = getFirestore(app);
-                } catch (e) {
-                    console.error("Firebase initialization failed:", e);
-                    UIElements.loadingOverlay.innerHTML = `
-                        <div class="text-center text-white">
-                            <h2 class="text-xl font-bold mb-2">Erreur d'Initialisation</h2>
-                             <p>Impossible d'initialiser la base de données.</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                onAuthStateChanged(auth, user => {
-                    if (user) {
-                        state.userId = user.uid;
-                        state.isAuthReady = true;
-                        UIElements.userIdDisplay.textContent = user.uid;
-                        firestoreManager.loadSettings();
-                    } else {
-                        state.isAuthReady = false;
-                        state.userId = null;
+                keys.sort().reverse();
+                keys.forEach(key => {
+                    const date = key.replace('jc-journal-', '');
+                    if (!filterDate || date === filterDate) {
+                        const li = document.createElement('li');
+                        li.className = 'p-3 bg-slate-50 rounded-lg hover:bg-slate-100 cursor-pointer';
+                        li.textContent = new Date(date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                        li.dataset.date = date;
+                        UIElements.historique.list.appendChild(li);
                     }
                 });
-
-                try {
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } else {
-                        await signInAnonymously(auth);
-                    }
-                } catch (error) {
-                    console.error("Authentication failed:", error);
-                     UIElements.loadingOverlay.innerHTML = `
-                        <div class="text-center text-white">
-                            <h2 class="text-xl font-bold mb-2">Erreur d'Authentification</h2>
-                             <p>L'authentification a échoué.</p>
-                        </div>
-                    `;
+                if (UIElements.historique.list.innerHTML === '') {
+                    UIElements.historique.list.innerHTML = `<li class="p-3 text-slate-500">Aucun rapport trouvé pour cette date.</li>`;
                 }
-
-                // Event Listeners Setup
-                UIElements.buttons.save.addEventListener('click', saveCurrentJournal);
-                UIElements.buttons.print.addEventListener('click', printReport);
-                UIElements.buttons.prevDay.addEventListener('click', () => {
-                    const currentDate = new Date(state.workingDate + 'T00:00:00');
-                    currentDate.setDate(currentDate.getDate() - 1);
-                    firestoreManager.loadJournal(currentDate.toISOString().split('T')[0]);
-                });
-                UIElements.buttons.nextDay.addEventListener('click', () => {
-                    const currentDate = new Date(state.workingDate + 'T00:00:00');
-                    currentDate.setDate(currentDate.getDate() + 1);
-                    firestoreManager.loadJournal(currentDate.toISOString().split('T')[0]);
-                });
-                UIElements.accueil.form.addEventListener('submit', (e) => {
+            }
+        };
+        
+        const modal = {
+            open(id) {
+                const tx = state.transactions.find(t => t.id === id);
+                if (!tx) return;
+                UIElements.modal.id.value = tx.id;
+                UIElements.modal.numPiece.value = tx.numPiece;
+                UIElements.modal.libelle.value = tx.libelle;
+                UIElements.modal.categorie.value = tx.categorie;
+                UIElements.modal.montant.value = tx.montant;
+                UIElements.modal.container.classList.remove('hidden');
+                setTimeout(() => { UIElements.modal.container.classList.remove('opacity-0'); UIElements.modal.content.classList.remove('scale-95'); }, 10);
+            },
+            close() {
+                UIElements.modal.container.classList.add('opacity-0');
+                UIElements.modal.content.classList.add('scale-95');
+                setTimeout(() => UIElements.modal.container.classList.add('hidden'), 300);
+            },
+            init() {
+                UIElements.modal.form.addEventListener('submit', (e) => {
                     e.preventDefault();
-                    const data = { numPiece: document.getElementById('num-piece').value, libelle: document.getElementById('libelle').value, categorie: UIElements.accueil.categorieSelect.value, compte: UIElements.accueil.compteSelect.value, entree: parseFloat(document.getElementById('montant-entree').value) || 0, sortie: parseFloat(document.getElementById('montant-sortie').value) || 0 };
-                    addTransaction(data);
-                });
-                UIElements.accueil.body.addEventListener('click', (e) => {
-                    const delBtn = e.target.closest('.delete-btn');
-                    const editBtn = e.target.closest('.edit-btn');
-                    if (delBtn) {
-                        const id = parseInt(delBtn.dataset.id);
-                        modalManager.showConfirm('Voulez-vous vraiment supprimer cette opération ?', () => deleteTransaction(id));
-                    }
-                    if (editBtn) {
-                        editTransaction(parseInt(editBtn.dataset.id));
-                    }
-                });
-                UIElements.modals.edit.form.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    const modal = UIElements.modals.edit;
-                    const id = parseInt(modal.id.value);
+                    const id = parseInt(UIElements.modal.id.value);
                     const txIndex = state.transactions.findIndex(t => t.id === id);
                     if (txIndex > -1) {
-                        state.transactions[txIndex] = { ...state.transactions[txIndex], numPiece: modal.numPiece.value, libelle: modal.libelle.value, categorie: modal.categorie.value, montant: parseFloat(modal.montant.value) || 0 };
+                        state.transactions[txIndex] = { ...state.transactions[txIndex], numPiece: UIElements.modal.numPiece.value, libelle: UIElements.modal.libelle.value, categorie: UIElements.modal.categorie.value, montant: parseFloat(UIElements.modal.montant.value) || 0 };
                     }
-                    modalManager.close(modal);
+                    this.close();
                     renderAll();
                     showToast("Opération modifiée !");
                 });
-                UIElements.modals.edit.cancelBtn.addEventListener('click', () => modalManager.close(UIElements.modals.edit));
-
-                UIElements.modals.balance.form.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    const modal = UIElements.modals.balance;
-                    const acc = modal.accountName.value;
-                    const newSolde = parseFloat(modal.amount.value);
-                    if (!isNaN(newSolde)) {
-                        state.soldesInitiaux[acc] = newSolde;
-                        renderAll();
-                        showToast(`Solde initial de ${acc} mis à jour.`);
-                    } else {
-                        showToast("Veuillez entrer un nombre valide.", "e");
-                    }
-                    modalManager.close(modal);
-                });
-                UIElements.modals.balance.cancelBtn.addEventListener('click', () => modalManager.close(UIElements.modals.balance));
-
-                UIElements.parametrage.saveBalancesBtn.addEventListener('click', () => {
-                    const formData = new FormData(UIElements.parametrage.initialBalancesForm);
-                    for (let [account, value] of formData.entries()) {
-                        state.soldesInitiaux[account] = parseFloat(value) || 0;
-                    }
-                    renderAll();
-                    saveCurrentJournal(); // Save the journal after updating balances from settings
-                    showToast("Soldes initiaux sauvegardés pour ce jour !");
-                });
-
-                UIElements.parametrage.changeDateBtn.addEventListener('click', () => {
-                    const newDate = UIElements.parametrage.workDateInput.value;
-                    if (newDate) {
-                        firestoreManager.loadJournal(newDate);
-                        showToast(`Journal du ${newDate} chargé.`);
-                    }
-                });
-                
-                UIElements.historique.list.addEventListener('click', (e) => { if (e.target.tagName === 'LI') { firestoreManager.loadJournal(e.target.dataset.date); navigation.to('#accueil'); showToast(`Journal du ${e.target.dataset.date} chargé.`); } });
-                UIElements.historique.filterBtn.addEventListener('click', () => {
-                    const filterDate = UIElements.historique.filterDateInput.value;
-                    navigation.updateHistorique(filterDate || null);
-                });
-                UIElements.historique.clearFilterBtn.addEventListener('click', () => {
-                    UIElements.historique.filterDateInput.value = '';
-                    navigation.updateHistorique();
-                });
+                UIElements.modal.cancelBtn.addEventListener('click', () => this.close());
             }
+        };
 
-            init();
-        });
+        const renderAll = () => {
+            renderAccountCards();
+            renderReportTable();
+            categoryManager.populateDropdowns();
+            accountManager.populateDropdowns();
+            renderInitialBalancesForm();
+        };
+
+        const renderAccountCards = () => {
+            UIElements.accueil.cardsContainer.innerHTML = state.accounts.map(acc => `<div id="card-${acc}" data-name="${acc}" class="bg-white p-6 rounded-xl shadow-md border transition-all cursor-pointer"><h3 class="text-sm font-medium text-slate-500">${acc}</h3><p id="solde-${acc}-card" class="text-3xl font-bold mt-2">0</p></div>`).join('');
+            state.accounts.forEach(acc => document.getElementById(`card-${acc}`).addEventListener('click', () => editInitialBalance(acc)));
+        };
+
+        const renderReportTable = () => {
+            UIElements.accueil.header.innerHTML = `<tr><th class="px-4 py-3" rowspan="2">N° PIÈCE</th><th class="px-4 py-3" rowspan="2">Libellé</th><th class="px-4 py-3" rowspan="2">Catégorie</th>${state.accounts.map(acc => `<th class="px-4 py-3 text-center border-l" colspan="2">${acc}</th>`).join('')}<th rowspan="2"></th></tr><tr>${state.accounts.map(() => `<th class="px-4 py-3 text-center border-l text-green-600">Entrées</th><th class="px-4 py-3 text-center text-red-600">Sorties</th>`).join('')}</tr>`;
+            UIElements.accueil.body.innerHTML = `<tr class="bg-slate-50 font-semibold"><td class="px-4 py-2" colspan="3">Solde initial</td>${state.accounts.map(acc => `<td class="px-4 py-2 text-center text-slate-500" colspan="2">${formatCurrency(state.soldesInitiaux[acc] || 0)}</td>`).join('')}<td></td></tr>`;
+            
+            const sortedTransactions = [...state.transactions].sort((a, b) => {
+                if (a.compte === 'Caisse' && b.compte !== 'Caisse') return -1;
+                if (a.compte !== 'Caisse' && b.compte === 'Caisse') return 1;
+                return a.id - b.id;
+            });
+
+            sortedTransactions.forEach(tx => {
+                const row = UIElements.accueil.body.insertRow(-1);
+                row.className = 'bg-white border-b border-slate-200 hover:bg-slate-50 new-row';
+                let cells = `<td class="px-4 py-2">${tx.numPiece}</td><td class="px-4 py-2">${tx.libelle}</td><td class="px-4 py-2 text-xs text-slate-500">${tx.categorie}</td>`;
+                state.accounts.forEach(acc => {
+                    if (acc === tx.compte) {
+                        cells += tx.type === 'entree' ? `<td class="px-4 py-2 text-center text-green-600">${formatCurrency(tx.montant)}</td><td class="px-4 py-2 text-center"></td>` : `<td class="px-4 py-2 text-center"></td><td class="px-4 py-2 text-center text-red-600">${formatCurrency(tx.montant)}</td>`;
+                    } else { cells += `<td class="px-4 py-2"></td><td class="px-4 py-2"></td>`; }
+                });
+                cells += `<td class="px-2 py-2 text-center"><button class="edit-btn text-blue-500 p-1" data-id="${tx.id}">✏️</button><button class="delete-btn text-red-500 p-1 font-bold" data-id="${tx.id}">&times;</button></td>`;
+                row.innerHTML = cells;
+            });
+            UIElements.accueil.footer.innerHTML = `<tr class="border-t-2 border-slate-300"><td class="px-4 py-3" colspan="3">TOTAL OPÉRATIONS</td>${state.accounts.map(acc => { const txs = state.transactions.filter(t => t.compte === acc); const e = txs.filter(t => t.type === 'entree').reduce((s, t) => s + t.montant, 0); const s = txs.filter(t => t.type === 'sortie').reduce((s, t) => s + t.montant, 0); return `<td class="px-4 py-3 text-center text-green-600">${formatCurrency(e)}</td><td class="px-4 py-3 text-center text-red-600">${formatCurrency(s)}</td>`; }).join('')}<td></td></tr>`;
+            updateTotals();
+        };
+
+        const updateTotals = () => {
+            state.accounts.forEach(acc => {
+                const txs = state.transactions.filter(t => t.compte === acc);
+                const entrees = txs.filter(t => t.type === 'entree').reduce((s, t) => s + t.montant, 0);
+                const sorties = txs.filter(t => t.type === 'sortie').reduce((s, t) => s + t.montant, 0);
+                const soldeFinal = (state.soldesInitiaux[acc] || 0) + entrees - sorties;
+                const card = document.getElementById(`card-${acc}`);
+                const cardText = document.getElementById(`solde-${acc}-card`);
+                if(card && cardText){
+                    cardText.textContent = formatCurrency(soldeFinal);
+                    card.className = 'bg-white p-6 rounded-xl shadow-md border transition-all cursor-pointer';
+                    cardText.className = 'text-3xl font-bold mt-2';
+                    if (soldeFinal > 0) { card.classList.add('bg-green-50', 'border-green-300'); cardText.classList.add('text-green-800'); }
+                    else if (soldeFinal < 0) { card.classList.add('bg-red-50', 'border-red-300'); cardText.classList.add('text-red-800'); }
+                    else { card.classList.add('bg-slate-50', 'border-slate-300'); cardText.classList.add('text-slate-800'); }
+                }
+            });
+        };
+
+        const editInitialBalance = (acc) => {
+            const soldeActuel = state.soldesInitiaux[acc] || 0;
+            const newSoldeStr = prompt(`Modifier le solde initial pour ${acc}:`, soldeActuel);
+            if (newSoldeStr !== null) {
+                const newSolde = parseFloat(newSoldeStr.replace(/,/g, '.'));
+                if (!isNaN(newSolde)) { state.soldesInitiaux[acc] = newSolde; renderAll(); }
+                else { showToast("Veuillez entrer un nombre valide.", "e"); }
+            }
+        };
+
+        const renderInitialBalancesForm = () => {
+            UIElements.parametrage.initialBalancesForm.innerHTML = '';
+            state.accounts.forEach(acc => {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <label for="balance-${acc}" class="block text-sm font-medium text-slate-600 mb-1">${acc}</label>
+                    <input type="number" id="balance-${acc}" name="${acc}" value="${state.soldesInitiaux[acc] || 0}" class="w-full px-3 py-2 border border-slate-300 rounded-lg shadow-sm">
+                `;
+                UIElements.parametrage.initialBalancesForm.appendChild(div);
+            });
+        };
+
+        const printReport = () => {
+            const date = new Date(state.workingDate).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            const signatureBlock = `
+                <div class="mt-16 pt-8 grid grid-cols-3 gap-8 text-center text-sm">
+                    <div>
+                        <p class="font-bold">SERVICE FINANCIER</p>
+                        <div class="border-t-2 border-slate-300 mt-16"></div>
+                    </div>
+                    <div>
+                        <p class="font-bold">DIRECTEUR DES OPERATIONS</p>
+                        <div class="border-t-2 border-slate-300 mt-16"></div>
+                    </div>
+                    <div>
+                        <p class="font-bold">DIRECTEUR GENERAL</p>
+                        <div class="border-t-2 border-slate-300 mt-16"></div>
+                    </div>
+                </div>`;
+            
+            const totals = state.accounts.reduce((acc, account) => {
+                const txs = state.transactions.filter(t => t.compte === account);
+                acc[account] = {
+                    entrees: txs.filter(t => t.type === 'entree').reduce((s, t) => s + t.montant, 0),
+                    sorties: txs.filter(t => t.type === 'sortie').reduce((s, t) => s + t.montant, 0)
+                };
+                return acc;
+            }, {});
+
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html><head><title>Rapport de Caisse - ${date}</title>
+                <script src="https://cdn.tailwindcss.com"><\/script>
+                <style>
+                    body { font-family: 'Inter', sans-serif; }
+                    .report-table { width: 100%; border-collapse: collapse; }
+                    .report-table th, .report-table td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+                    .report-table th { background-color: #f2f2f2; }
+                    .text-center { text-align: center; }
+                    .text-right { text-align: right; }
+                    .font-bold { font-weight: bold; }
+                    .text-green-600 { color: #059669; }
+                    .text-red-600 { color: #dc2626; }
+                    @page { margin: 1.5cm; }
+                </style>
+                </head><body>
+                <div class="container mx-auto p-4">
+                    <p class="text-xs text-slate-500 mb-4">Pour un meilleur affichage, choisissez l'orientation "Paysage" dans les options d'impression.</p>
+                    <h1 class="text-3xl font-bold text-center mb-4">Rapport Journalier de Caisse</h1>
+                    <p class="mb-6"><strong>Date:</strong> ${date}</p>
+                    <h2 class="text-2xl font-bold mb-4">Détail des Opérations</h2>
+                    <table class="report-table">
+                        <thead>
+                            <tr>
+                                <th rowspan="2" class="w-1/4"></th>
+                                ${state.accounts.map(acc => `<th colspan="2" class="text-center">${acc}</th>`).join('')}
+                            </tr>
+                            <tr>
+                                ${state.accounts.map(() => `<th class="text-center text-green-600">Entrées</th><th class="text-center text-red-600">Sorties</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="font-bold">Solde initial</td>
+                                ${state.accounts.map(acc => `<td class="text-right text-green-600">${formatCurrency(state.soldesInitiaux[acc] || 0)}</td><td></td>`).join('')}
+                            </tr>
+                            <tr>
+                                <td class="font-bold">Totaux</td>
+                                ${state.accounts.map(acc => `<td class="text-right text-green-600">${formatCurrency(totals[acc].entrees)}</td><td class="text-right text-red-600">${formatCurrency(totals[acc].sorties)}</td>`).join('')}
+                            </tr>
+                            <tr>
+                                <td class="font-bold">Solde final</td>
+                                ${state.accounts.map(acc => {
+                                    const finalBalance = (state.soldesInitiaux[acc] || 0) + totals[acc].entrees - totals[acc].sorties;
+                                    return `<td colspan="2" class="text-center font-bold text-red-600">${formatCurrency(finalBalance)}</td>`;
+                                }).join('')}
+                            </tr>
+                        </tbody>
+                    </table>
+                    ${signatureBlock}
+                </div>
+                </body></html>`);
+
+            printWindow.document.close();
+            setTimeout(() => {
+                printWindow.print();
+                printWindow.close();
+            }, 250);
+        };
+
+        function init() {
+            storage.loadAccs();
+            storage.loadCats();
+            navigation.init();
+            modal.init();
+            categoryManager.init();
+            accountManager.init();
+            storage.loadJournal(getToday());
+
+            UIElements.parametrage.changeDateBtn.addEventListener('click', () => {
+                const newDate = UIElements.parametrage.workDateInput.value;
+                if (newDate) {
+                    storage.loadJournal(newDate);
+                    showToast(`Journal du ${newDate} chargé.`);
+                }
+            });
+            UIElements.parametrage.saveBalancesBtn.addEventListener('click', () => {
+                const formData = new FormData(UIElements.parametrage.initialBalancesForm);
+                for (let [account, value] of formData.entries()) {
+                    state.soldesInitiaux[account] = parseFloat(value) || 0;
+                }
+                renderAll();
+                showToast("Soldes initiaux sauvegardés !");
+            });
+            
+            UIElements.buttons.save.addEventListener('click', () => storage.saveJournal(state.workingDate));
+            UIElements.buttons.print.addEventListener('click', printReport);
+            UIElements.buttons.prevDay.addEventListener('click', () => {
+                const currentDate = new Date(state.workingDate);
+                currentDate.setDate(currentDate.getDate() - 1);
+                storage.loadJournal(currentDate.toISOString().split('T')[0]);
+            });
+            UIElements.buttons.nextDay.addEventListener('click', () => {
+                const currentDate = new Date(state.workingDate);
+                currentDate.setDate(currentDate.getDate() + 1);
+                storage.loadJournal(currentDate.toISOString().split('T')[0]);
+            });
+            
+            UIElements.accueil.form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const data = { numPiece: document.getElementById('num-piece').value, libelle: document.getElementById('libelle').value, categorie: UIElements.accueil.categorieSelect.value, compte: UIElements.accueil.compteSelect.value, entree: parseFloat(document.getElementById('montant-entree').value) || 0, sortie: parseFloat(document.getElementById('montant-sortie').value) || 0 };
+                if (!data.libelle || (data.entree <= 0 && data.sortie <= 0) || (data.entree > 0 && data.sortie > 0)) { showToast("Saisir un libellé et un seul montant.", 'e'); return; }
+                state.transactions.push({ id: ++state.transactionIdCounter, ...data, type: data.entree > 0 ? 'entree' : 'sortie', montant: data.entree > 0 ? data.entree : data.sortie });
+                renderAll();
+                UIElements.accueil.form.reset();
+            });
+            UIElements.accueil.body.addEventListener('click', (e) => {
+                const del = e.target.closest('.delete-btn'), edit = e.target.closest('.edit-btn');
+                if (del) { const id = parseInt(del.dataset.id); if (confirm('Supprimer?')) { state.transactions = state.transactions.filter(tx => tx.id !== id); renderAll(); showToast("Opération supprimée.", "e"); } }
+                if (edit) modal.open(parseInt(edit.dataset.id));
+            });
+            UIElements.historique.list.addEventListener('click', (e) => { if (e.target.tagName === 'LI') { storage.loadJournal(e.target.dataset.date); navigation.to('#accueil'); showToast(`Journal du ${e.target.dataset.date} chargé.`); } });
+            UIElements.historique.filterBtn.addEventListener('click', () => {
+                const filterDate = UIElements.historique.filterDateInput.value;
+                if(filterDate) {
+                    navigation.updateHistorique(filterDate);
+                }
+            });
+            UIElements.historique.clearFilterBtn.addEventListener('click', () => {
+                UIElements.historique.filterDateInput.value = '';
+                navigation.updateHistorique();
+            });
+        }
+        init();
+    });
     </script>
 </body>
 </html>
-
