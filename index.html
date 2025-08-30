@@ -118,7 +118,7 @@
             saveAccs() { localStorage.setItem(this.keys.accs, JSON.stringify(state.accounts)); },
             loadAccs() { state.accounts = JSON.parse(localStorage.getItem(this.keys.accs)) || ["Caisse", "Wave", "Orange Money"]; }
         };
-// ANKAR//
+/* ankar */
         const manager = (type, ui, stateKey) => ({
             init() { ui.addBtn.addEventListener('click', () => this.add()); ui.list.addEventListener('click', (e) => { if (e.target.classList.contains(`delete-${type}-btn`)) this.remove(e.target.dataset.name); }); },
             add() { const name = ui.input.value.trim(); if (name && !state[stateKey].includes(name)) { state[stateKey].push(name); storage[type === 'cat' ? 'saveCats' : 'saveAccs'](); this.render(); ui.input.value = ''; showToast(`${type === 'cat' ? 'Catégorie' : 'Compte'} ajouté.`); renderAll(); } },
@@ -454,3 +454,4 @@
     </script>
 </body>
 </html>
+
