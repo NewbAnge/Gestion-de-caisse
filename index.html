@@ -86,7 +86,10 @@
 
         const storage = {
             keys: { journal: (d) => `jc-journal-${d}`, cats: 'jc-cats', accs: 'jc-accs' },
-            saveJournal(d) { localStorage.setItem(this.keys.journal(d), JSON.stringify({ txs: state.transactions, soldes: state.soldesInitiaux, id: state.transactionIdCounter })); showToast(`Journal du ${d} sauvegardé !`); },
+            saveJournal(d, showMsg = true) { 
+                localStorage.setItem(this.keys.journal(d), JSON.stringify({ txs: state.transactions, soldes: state.soldesInitiaux, id: state.transactionIdCounter })); 
+                if(showMsg) showToast(`Journal du ${d} sauvegardé !`);
+            },
             loadJournal(d) {
                 const getPreviousDay = (dateStr) => {
                     const date = new Date(dateStr);
@@ -111,13 +114,19 @@
                 }
                 
                 const data = localStorage.getItem(this.keys.journal(d));
-                const savedJournal = data ? JSON.parse(data) : getInitialState();
                 
                 state.workingDate = d;
-                state.transactions = savedJournal.txs || [];
-                state.transactionIdCounter = savedJournal.id || 0;
-                
-                state.soldesInitiaux = savedJournal.soldes && Object.keys(savedJournal.soldes).length > 0 ? savedJournal.soldes : calculatedInitialBalances;
+
+                if (data) {
+                    const savedJournal = JSON.parse(data);
+                    state.transactions = savedJournal.txs || [];
+                    state.transactionIdCounter = savedJournal.id || 0;
+                    state.soldesInitiaux = savedJournal.soldes || calculatedInitialBalances;
+                } else {
+                    state.transactions = [];
+                    state.transactionIdCounter = 0;
+                    state.soldesInitiaux = calculatedInitialBalances;
+                }
 
                 UIElements.dateDisplay.textContent = new Date(d + 'T00:00:00').toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
                 UIElements.parametrage.workDateInput.value = d;
@@ -521,7 +530,11 @@
 
             UIElements.parametrage.changeDateBtn.addEventListener('click', () => {
                 const newDate = UIElements.parametrage.workDateInput.value;
-                if (newDate) { storage.loadJournal(newDate); showToast(`Journal du ${newDate} chargé.`); }
+                if (newDate && newDate !== state.workingDate) { 
+                    storage.saveJournal(state.workingDate, false);
+                    storage.loadJournal(newDate); 
+                    showToast(`Journal du ${newDate} chargé.`); 
+                }
             });
             UIElements.parametrage.saveBalancesBtn.addEventListener('click', () => {
                 const formData = new FormData(UIElements.parametrage.initialBalancesForm);
@@ -533,11 +546,13 @@
             UIElements.buttons.save.addEventListener('click', () => storage.saveJournal(state.workingDate));
             UIElements.buttons.print.addEventListener('click', printReport);
             UIElements.buttons.prevDay.addEventListener('click', () => {
+                storage.saveJournal(state.workingDate, false);
                 const currentDate = new Date(state.workingDate);
                 currentDate.setDate(currentDate.getDate() - 1);
                 storage.loadJournal(currentDate.toISOString().split('T')[0]);
             });
             UIElements.buttons.nextDay.addEventListener('click', () => {
+                storage.saveJournal(state.workingDate, false);
                 const currentDate = new Date(state.workingDate);
                 currentDate.setDate(currentDate.getDate() + 1);
                 storage.loadJournal(currentDate.toISOString().split('T')[0]);
